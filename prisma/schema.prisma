@@ -1,0 +1,315 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  name     String?
+  surname  String?
+  email    String  @unique
+  phone    String?
+  username String?
+  password String
+
+  @@map("users")
+}
+
+model Product {
+  id                   String           @id @default(auto()) @map("_id") @db.ObjectId
+  name                 String
+  model_code           String?
+  buying_price         Float            @default(0)
+  buy_price_safe_id    String           @db.ObjectId
+  sale_price Float @default(0)
+  sale_price_safe_id   String           @db.ObjectId
+  real_stock           Int              @default(0)
+  critical_stock_alert Boolean          @default(false)
+  product_type_id      String           @db.ObjectId
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+  deleted_at           DateTime?
+  buy_price_safe       Safe             @relation(name: "buy_safe", fields: [buy_price_safe_id], references: [id])
+  sale_price_safe      Safe             @relation(name: "sale_safe", fields: [sale_price_safe_id], references: [id])
+  product_type         ProductType      @relation(fields: [product_type_id], references: [id])
+  invoice_products     InvoiceProduct[]
+
+  @@map("products")
+}
+
+model ProductType {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  initial_code String
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  deleted_at   DateTime?
+  Product      Product[]
+
+  @@map("product_types")
+}
+
+model Safe {
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  total            Float            @default(0)
+  currency         Currency         @relation(fields: [currency_id], references: [id])
+  currency_id      String           @db.ObjectId
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+  deleted_at       DateTime?
+  buy_products     Product[]        @relation("buy_safe")
+  sale_products    Product[]        @relation("sale_safe")
+  staffs           Staff[]
+  invoice_products InvoiceProduct[]
+
+  safe_logs SafeLog[]
+  cargos    Cargo[]
+  expenses Expense[]
+  @@map("safes")
+}
+
+model Supplier {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  email            String?
+  phone            String?
+  authorizedPerson String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  deleted_at       DateTime?
+
+  @@map("suppliers")
+}
+
+model Staff {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  surname        String?
+  phone          String?
+  email          String?
+  comment        String?
+  salary         Float     @default(0)
+  salary_safe    Safe      @relation(fields: [salary_safe_id], references: [id])
+  salary_safe_id String    @db.ObjectId
+  staff_role     StaffRole @relation(fields: [staff_role_id], references: [id])
+  staff_role_id  String    @db.ObjectId
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  @@map("staffs")
+}
+
+model StaffRole {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  staffs Staff[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Customer {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  surname          String?
+  email            String?      @unique
+  phone            String?      @unique
+  facebook_link    String?
+  twitter_link     String?
+  instagram_link   String?
+  country          String?
+  county           String?
+  district         String?
+  address          String?
+  post_code        String?
+  comment          String?
+  gender           Gender       @default(MALE)
+  customer_role    CustomerRole @relation(fields: [customer_role_id], references: [id])
+  customer_role_id String       @db.ObjectId
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+  deleted_at       DateTime?
+
+  invoices Invoice[]
+  @@map("customers")
+}
+
+model CustomerRole {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  customers  Customer[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  deleted_at DateTime?
+
+  @@map("customer_roles")
+}
+
+model Expense {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  price           Float?      @default(0)
+  date            DateTime    @default(now())
+  expense_type    ExpenseType @relation(fields: [expense_type_id], references: [id])
+  expense_type_id String      @db.ObjectId
+  safe Safe? @relation(fields: [safe_id], references: [id])
+  safe_id String @db.ObjectId
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  deleted_at      DateTime?
+
+  @@map("expenses")
+}
+
+model ExpenseType {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  expenses   Expense[]
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  @@map("expense_types")
+}
+
+model Invoice {
+  id                      String           @id @default(auto()) @map("_id") @db.ObjectId
+  description             String?
+  invoice_contract_number String?
+  //add cargo relationship after ?
+  date                    DateTime         @default(now())
+  customer                Customer         @relation(fields: [customer_id], references: [id])
+  customer_id             String           @db.ObjectId
+  created_at              DateTime         @default(now())
+  updated_at              DateTime         @updatedAt
+  deleted_at              DateTime?
+  invoice_products        InvoiceProduct[]
+  cargo                   Cargo?
+
+
+  @@map("invoices")
+}
+
+enum Tax {
+  ZERO
+  ONE
+  EIGHT
+  EIGHTEEN
+}
+
+model InvoiceProduct {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  invoice    Invoice   @relation(fields: [invoice_id], references: [id])
+  invoice_id String    @db.ObjectId
+  product    Product   @relation(fields: [product_id], references: [id])
+  product_id String    @db.ObjectId
+  price      Float     @default(0)
+  safe       Safe      @relation(fields: [safe_id], references: [id])
+  safe_id    String    @db.ObjectId
+  tax        Tax       @default(ZERO)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  @@map("invoice_products")
+}
+
+model Currency {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  unit             String?
+  code             String
+  forex_buying     Float     @default(0)
+  forex_selling    Float     @default(0)
+  banknote_buying  Float     @default(0)
+  banknote_selling Float     @default(0)
+  primary          Boolean   @default(false)
+  safes            Safe[]
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  deleted_at       DateTime?
+
+  @@map("currencies")
+}
+
+enum SafeLogType {
+  INPUT
+  OUTPUT
+  CASH_REGISTER
+}
+
+model SafeLog {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  content      String?
+  price        Float       @default(0)
+  normal_price Float       @default(0)
+  safe         Safe        @relation(fields: [safe_id], references: [id])
+  safe_id      String      @db.ObjectId
+  date         DateTime    @default(now())
+  type         SafeLogType
+  commision    Float       @default(0)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  cargos       Cargo[]
+  //cash register id
+}
+
+model Cargo {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  tracking_number      String?
+  amount               Float     @default(0)
+  description          String?
+  price                Float     @default(0)
+  paided               Boolean   @default(false)
+  date_of_paid         DateTime?
+  due_date             DateTime?
+  future_shipping_date DateTime?
+  invoice              Invoice?  @relation(fields: [invoice_id], references: [id])
+  invoice_id           String?   @unique @db.ObjectId
+
+  cargo_company    CargoCompany @relation(fields: [cargo_company_id], references: [id])
+  cargo_company_id String       @db.ObjectId
+
+  amount_type    AmountType @relation(fields: [amount_type_id], references: [id])
+  amount_type_id String     @db.ObjectId
+
+  safe    Safe   @relation(fields: [safe_id], references: [id])
+  safe_id String @db.ObjectId
+
+  safe_log    SafeLog   @relation(fields: [safe_log_id], references: [id])
+  safe_log_id String    @db.ObjectId
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+
+  @@map("cargos")
+}
+
+model CargoCompany {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  photo_path String
+
+  cargos Cargo[]
+  @@map("cargo_companies")
+}
+
+model AmountType {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  cargos Cargo[]
+  @@map("amount_types")
+}
