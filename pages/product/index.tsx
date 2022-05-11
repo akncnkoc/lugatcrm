@@ -18,16 +18,10 @@ import { Tooltip } from "../../components/core-ui/Tooltip"
 import { useModal } from "../../context/modal-context"
 import { getAllProducts } from "../../server/product.server"
 import ProductCreate from "../../modals/product/create"
-import { getAllProductTypes } from "../../server/product_type.server"
-import { getSafes } from "../../server/safe.server"
-import { getAllSuppliers } from "../../server/supplier.server"
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const products = await getAllProducts()
-  const productTypes = await getAllProductTypes()
-  const safes = await getSafes()
-  const suppliers = await getAllSuppliers()
-  return { props: { products, productTypes, safes, suppliers } }
+  return { props: { products } }
 }
 const Product: React.FC<
   InferGetServerSidePropsType<typeof getServerSideProps>
