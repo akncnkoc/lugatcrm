@@ -18,6 +18,7 @@ import { Tooltip } from "../../components/core-ui/Tooltip"
 import { useModal } from "../../context/modal-context"
 import { getAllProducts } from "../../server/product.server"
 import ProductCreate from "../../modals/product/create"
+import Head from "next/head"
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const products = await getAllProducts()
@@ -33,11 +34,14 @@ const Product: React.FC<
   }, [setStaticBackdrop])
   return (
     <>
+      <Head>
+        <title>Ürünler</title>
+      </Head>
       <Card>
         <CardHeader hasAction>
           <CardTitle>Ürünler</CardTitle>
           <CardActions>
-            <Button onClick={() => setModal(prepareDeleteAction(props))}>
+            <Button onClick={() => setModal(prepareDeleteAction())}>
               Yeni Kayıt
             </Button>
           </CardActions>
@@ -86,14 +90,8 @@ const Product: React.FC<
   )
 }
 
-const prepareDeleteAction = (props) => {
-  return (
-    <ProductCreate
-      productTypes={props.productTypes}
-      safes={props.safes}
-      suppliers={props.suppliers}
-    />
-  )
+const prepareDeleteAction = () => {
+  return <ProductCreate />
 }
 
 export default Product

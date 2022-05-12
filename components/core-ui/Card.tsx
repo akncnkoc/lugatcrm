@@ -13,6 +13,7 @@ const Card: React.FC<CardProps> = (props) => {
       className={`
         h-full
         rounded
+        px-4
         ${fullWidth && "w-full"} 
         ${(bgColor && bgColor) || "bg-white"} 
         ${shadow && "shadow shadow-aside-filler/20"}        
@@ -29,7 +30,7 @@ export const CardHeader: React.FC<{
   const { children, hasAction = false } = props
   return (
     <div
-      className={`flex h-16 w-full items-center border-b border-gray-filler py-4 px-4 ${
+      className={`flex h-16 w-full items-center py-10 px-4 ${
         hasAction && "justify-between"
       }`}>
       {children}
@@ -37,7 +38,7 @@ export const CardHeader: React.FC<{
   )
 }
 export const CardContent = (props) => {
-  return <div className="h-max w-full py-4">{props.children}</div>
+  return <div className="h-max w-full py-4 border-t border-gray-filler">{props.children}</div>
 }
 export const CardTitle = (props) => {
   return <h1 className="font-medium">{props.children}</h1>

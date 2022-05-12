@@ -11,7 +11,7 @@ const Layout: React.FC<any> = (props) => {
       <Aside />
       <div className="flex h-screen flex-1 flex-col bg-gray-filler">
         <Header />
-        <div className="flex overflow-y-scroll py-8 px-8">{props.children}</div>
+        <div className="flex overflow-y-scroll py-8 px-8 container mx-auto">{props.children}</div>
       </div>
     </div>
   )
@@ -22,7 +22,7 @@ const Aside = () => {
       id="aside"
       className="h-screen w-64 min-w-[256px] max-w-[256px] bg-aside-filler">
       <div className="py-4 text-center">
-        <Image src={Logo} width={144} height={35} />
+        <Image src={Logo} width={144} height={35} alt={"Logo"} />
       </div>
       <AsideMenu />
     </div>
@@ -84,7 +84,7 @@ const AsideMenu = () => {
   return (
     <div id="asideMenu" className="flex flex-col">
       {asideMenuItems.map((item, index) => (
-        <Link key={index} href={item.href}>
+        <Link key={index} href={item.href} passHref>
           <div
             className={`flex h-[44px] cursor-pointer items-center px-6 text-[13px] font-normal leading-[20px] text-gray-color transition-colors hover:bg-active-aside-menu ${
               router.asPath === item.href ? "bg-active-aside-menu" : ""

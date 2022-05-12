@@ -1,5 +1,4 @@
 const Color = require("color")
-const lighen = (clr, val) => Color(clr).lighten(val).rgb().string()
 const darken = (clr, val) => Color(clr).darken(val).rgb().string()
 module.exports = {
   content: [
@@ -33,10 +32,14 @@ module.exports = {
       minWidth: {
         "250px": "250px",
         "500px": "500px",
+        "10xl" : "120rem"
       },
       minHeight: {
         "250px": "250px",
         "500px": "500px",
+      },
+      maxWidth:{
+        "10xl" : "120rem"
       },
       inset: {
         7.5: "30px",

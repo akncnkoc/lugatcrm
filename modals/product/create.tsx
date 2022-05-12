@@ -1,34 +1,17 @@
 import React, { useState } from "react"
 import Card, {
-  CardActions,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "../../components/core-ui/Card"
 import { Button } from "../../components/core-ui/Button"
-import Router from "next/router"
 import { Input } from "../../components/core-ui/Input"
 import { Grid } from "../../components/core-ui/Miscellaneous"
-import {
-  GetServerSideProps,
-  GetStaticProps,
-  InferGetServerSidePropsType,
-  InferGetStaticPropsType,
-} from "next"
 import { Select } from "../../components/core-ui/Select"
-import { getSafes } from "../../server/safe.server"
-import { getAllProductTypes } from "../../server/product_type.server"
-import { getAllSuppliers } from "../../server/supplier.server"
-import Fillable from "../../components/core-ui/Fillable"
 import Head from "next/head"
-import SelectInput from "../../components/core-ui/SelectInput"
 
-const ProductCreate: React.FC<{
-  productTypes: any
-  safes: any
-  suppliers: any
-}> = (props) => {
+const ProductCreate: React.FC = () => {
   const [form, setForm] = useState<any>({
     name: "",
     model_code: "",
@@ -46,13 +29,14 @@ const ProductCreate: React.FC<{
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     try {
-      const body = { ...form }
-      await fetch("/api/product", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      })
-      await Router.push("/expense")
+      // const body = { ...form }
+      console.log(form)
+      // await fetch("/api/product", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(body),
+      // })
+      // await Router.push("/expense")
     } catch (error) {
       console.error(error)
     }
@@ -65,9 +49,24 @@ const ProductCreate: React.FC<{
       <Card shadow={false}>
         <form onSubmit={submitData}>
           <CardHeader hasAction>
-            <CardTitle>Ürün Bilgileri {form.product_type_id}</CardTitle>
+            <CardTitle>Ürün Bilgileri</CardTitle>
           </CardHeader>
           <CardContent>
+            <Grid col={1} row={1}>
+              <Select
+                optionText={"name"}
+                optionValue={"id"}
+                name={"suppliers"}
+                multiple
+                async
+                asyncLoadUrl={"/api/supplier"}
+                value={form.suppliers}
+                title={"Tedarikçiler"}
+                onChange={(value) =>
+                  setForm((prevState) => ({ ...prevState, suppliers: value }))
+                }
+              />
+            </Grid>
             <Grid col={1} row={4} className={"mb-4 gap-2"}>
               <Input
                 label={"Ürün Adı"}
@@ -100,45 +99,34 @@ const ProductCreate: React.FC<{
                 async
                 asyncLoadUrl={"/api/product_type"}
               />
-              <Select
-                options={props.safes}
-                optionText={"name"}
-                optionValue={"id"}
-                name={"suppliers"}
-                value={form.suppliers}
-                title={"Tedarikçiler"}
-                onChange={(value) =>
-                  setForm((prevState) => ({ ...prevState, suppliers: value }))
-                }
-              />
             </Grid>
             <Grid col={1} row={2} className={"gap-4"}>
-              <SelectInput
-                inputTitle={"Alış Fiyatı"}
-                selectTitle={"Kasa"}
-                options={props.safes}
-                selectedValue={form.buying_price_safe_id}
-                textValue={form.buying_price}
-                selectOptionText={"name"}
-                selectOptionValue={"id"}
-                inputName={"buying_price"}
-                selectName={"buying_price_safe_id"}
-                onSelectChange={setForm}
-                onTextChange={setForm}
-              />
-              <SelectInput
-                inputTitle={"Satış Fiyatı"}
-                selectTitle={"Kasa"}
-                options={props.safes}
-                selectedValue={form.sale_price_safe_id}
-                textValue={form.sale_price}
-                selectOptionText={"name"}
-                selectOptionValue={"id"}
-                inputName={"sale_price"}
-                selectName={"sale_price_safe_id"}
-                onSelectChange={setForm}
-                onTextChange={setForm}
-              />
+              {/*<SelectInput*/}
+              {/*  inputTitle={"Alış Fiyatı"}*/}
+              {/*  selectTitle={"Kasa"}*/}
+              {/*  options={props.safes}*/}
+              {/*  selectedValue={form.buying_price_safe_id}*/}
+              {/*  textValue={form.buying_price}*/}
+              {/*  selectOptionText={"name"}*/}
+              {/*  selectOptionValue={"id"}*/}
+              {/*  inputName={"buying_price"}*/}
+              {/*  selectName={"buying_price_safe_id"}*/}
+              {/*  onSelectChange={setForm}*/}
+              {/*  onTextChange={setForm}*/}
+              {/*/>*/}
+              {/*<SelectInput*/}
+              {/*  inputTitle={"Satış Fiyatı"}*/}
+              {/*  selectTitle={"Kasa"}*/}
+              {/*  options={props.safes}*/}
+              {/*  selectedValue={form.sale_price_safe_id}*/}
+              {/*  textValue={form.sale_price}*/}
+              {/*  selectOptionText={"name"}*/}
+              {/*  selectOptionValue={"id"}*/}
+              {/*  inputName={"sale_price"}*/}
+              {/*  selectName={"sale_price_safe_id"}*/}
+              {/*  onSelectChange={setForm}*/}
+              {/*  onTextChange={setForm}*/}
+              {/*/>*/}
             </Grid>
           </CardContent>
           <CardFooter>
