@@ -41,7 +41,7 @@ export const Input: React.FC<
       <div className={"relative"}>
         <input
           type={"text"}
-          className={`mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 ${inputClassName}`}
+          className={`mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-all ${inputClassName}`}
           id={name}
           step={"any"}
           defaultValue={value}

@@ -4,7 +4,7 @@ import { Button } from "./Button"
 import { DatatablePageSizeSelector } from "./datatable/DatatablePageSizeSelector"
 
 export interface DatableOptions {
-  pageSize: number
+  pageSize?: number
 }
 
 export interface DatatableDataShape {
@@ -13,7 +13,7 @@ export interface DatatableDataShape {
 
 interface DatatableProps {
   columns: Array<string>
-  options: DatableOptions
+  options?: DatableOptions
   data: DatatableDataShape[]
   render?: Function
 }
@@ -133,12 +133,14 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
     setAdapter((prevState) => ({
       ...prevState,
       loading: true,
-      pageSize: options.pageSize
-        ? DEFAULT_PAGE_SIZE_OPTIONS.findIndex((e) => options.pageSize === e) !=
-          -1
-          ? options.pageSize
-          : INITIAL_PAGE_SIZE
-        : INITIAL_PAGE_SIZE,
+      pageSize:
+        options && options.pageSize
+          ? DEFAULT_PAGE_SIZE_OPTIONS.findIndex(
+              (e) => options.pageSize === e
+            ) != -1
+            ? options.pageSize
+            : INITIAL_PAGE_SIZE
+          : INITIAL_PAGE_SIZE,
     }))
   }, [])
 
@@ -300,7 +302,10 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
 
 export const TableDataCell = (props) => {
   return (
-    <td className="font-[13px] whitespace-nowrap border-r border-b border-gray-200 border-gray-200 p-[13px] leading-[20px] text-[#3f4254]">
+    <td
+      className={`font-13px whitespace-nowrap border-r border-b border-gray-200 p-[13px] leading-[20px] text-[#3f4254] ${
+        props.center && "flex justify-center"
+      }`}>
       {props.children}
     </td>
   )

@@ -43,9 +43,9 @@ const Modal: React.FC<ModalProps> = (props) => {
           <div
             onClick={() => unSetModal()}
             className={
-              "absolute -top-12 -right-4 h-16 cursor-pointer text-2xl text-gray-500"
+              "absolute -top-14 -right-4 h-32 cursor-pointer text-2xl text-gray-500"
             }>
-            <IoIosCloseCircle />
+            <IoIosCloseCircle className={"text-3xl"} />
           </div>
         </div>
         <div className={"relative h-full w-full"}>{modal}</div>

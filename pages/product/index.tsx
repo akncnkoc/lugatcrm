@@ -17,7 +17,7 @@ import { BiEditAlt } from "react-icons/bi"
 import { Tooltip } from "../../components/core-ui/Tooltip"
 import { useModal } from "../../context/modal-context"
 import { getAllProducts } from "../../server/product.server"
-import ProductCreate from "../../modals/product/create"
+import ProductCreateModal from "../../modals/product/create"
 import Head from "next/head"
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -41,7 +41,7 @@ const Product: React.FC<
         <CardHeader hasAction>
           <CardTitle>Ürünler</CardTitle>
           <CardActions>
-            <Button onClick={() => setModal(prepareDeleteAction())}>
+            <Button onClick={() => setModal(prepareCreateAction())}>
               Yeni Kayıt
             </Button>
           </CardActions>
@@ -90,8 +90,8 @@ const Product: React.FC<
   )
 }
 
-const prepareDeleteAction = () => {
-  return <ProductCreate />
+const prepareCreateAction = () => {
+  return <ProductCreateModal />
 }
 
 export default Product

@@ -1,5 +1,6 @@
 import React from "react"
 import Link from "next/link"
+import { VscLoading } from "react-icons/vsc"
 
 type ButtonProps = {
   children?: string | JSX.Element | JSX.Element[] | undefined | any
@@ -9,6 +10,7 @@ type ButtonProps = {
   hidden?: boolean
   ref?: string | undefined
   icon?: string | React.ReactNode | React.ReactNode[]
+  loading?: boolean
 } & React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
@@ -21,6 +23,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
     className,
     disabled = false,
     hidden = false,
+    loading = false,
     ref,
     icon,
     ...args
@@ -39,8 +42,13 @@ export const Button: React.FC<ButtonProps> = (props) => {
       `}
       disabled={disabled}
       {...args}>
-      {icon && <span className={"block mr-1"}>{icon}</span>}
-      {children}
+      {icon && <span className={`${children && "mr-1"} block`}>{icon}</span>}
+      {loading && (
+        <div className="flex justify-center">
+          <VscLoading className="text-base animate-spin" />
+        </div>
+      )}
+      {children && !loading && children}
     </button>
   )
 }

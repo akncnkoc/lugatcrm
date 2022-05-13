@@ -10,6 +10,7 @@ import Modal from "../components/core-ui/Modal"
 type ModalContextProps = {
   setModal?: Dispatch<SetStateAction<any>>
   setStaticBackdrop?: Dispatch<SetStateAction<any>>
+  unSetModal?: Function
 }
 
 const ModalContext = React.createContext<ModalContextProps>(null)
