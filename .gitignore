@@ -37,3 +37,4 @@ yarn-error.log*
 /playwright-report/
 /playwright/.cache/
 tests/example.spec.mjs
+pages/testpage/
