@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": ["styled-components-react-native"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -26,7 +27,8 @@
   "include": [
     "next-env.d.ts",
     "tab-env.d.ts",
+    "styled.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ]
+  ],
 }
