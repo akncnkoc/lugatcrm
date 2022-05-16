@@ -172,7 +172,7 @@ export const Select: React.FC<SelectProps> = (props) => {
         <div className={"relative w-full text-sm"}>
           <div
             className={`relative w-full select-none rounded border border-gray-200 px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-indigo-300 focus:outline-none  focus:ring-indigo-200 focus:ring-opacity-50  ${
-              adapter.opened && "border-blue-300"
+              adapter.opened && "border-indigo-300"
             } ${className}`}
             onChange={handleSearch}
             onFocus={handleFocus}
@@ -222,9 +222,9 @@ export const Select: React.FC<SelectProps> = (props) => {
                         value: item[optionValue],
                       }))
                     }}
-                    className={`relative  cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-blue-100 hover:text-blue-900 ${
+                    className={`relative  cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-indigo-100 hover:text-indigo-900 ${
                       item[optionText] === adapter.value
-                        ? "bg-blue-100 text-blue-900"
+                        ? "bg-indigo-100 text-indigo-900"
                         : "text-gray-900"
                     }`}>
                     <>
@@ -261,9 +261,9 @@ export const Select: React.FC<SelectProps> = (props) => {
                         value: item[optionValue],
                       }))
                     }}
-                    className={`relative cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-blue-100 hover:text-blue-900 ${
+                    className={`relative cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-indigo-100 hover:text-indigo-900 ${
                       item[optionText] === adapter.value
-                        ? "bg-blue-100 text-blue-900"
+                        ? "bg-indigo-100 text-indigo-900"
                         : "text-gray-900"
                     }`}>
                     <>
@@ -301,7 +301,7 @@ export const Select: React.FC<SelectProps> = (props) => {
         <div className={"relative w-full text-sm"}>
           <div
             className={`relative w-full select-none rounded border border-gray-200 px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-indigo-300 focus:outline-none  focus:ring-indigo-200 focus:ring-opacity-50  ${
-              adapter.opened && "border-blue-300"
+              adapter.opened && "border-indigo-300"
             } ${className}`}
             onChange={handleSearch}
             onFocus={handleFocus}
@@ -371,9 +371,9 @@ export const Select: React.FC<SelectProps> = (props) => {
                         }))
                       }
                     }}
-                    className={`relative  cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-blue-100 hover:text-blue-900 ${
+                    className={`relative  cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-indigo-100 hover:text-indigo-900 ${
                       item[optionText] === adapter.value
-                        ? "bg-blue-100 text-blue-900"
+                        ? "bg-indigo-100 text-indigo-900"
                         : "text-gray-900"
                     }`}>
                     <>
@@ -429,9 +429,9 @@ export const Select: React.FC<SelectProps> = (props) => {
                         }))
                       }
                     }}
-                    className={`relative cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-blue-100 hover:text-blue-900 ${
+                    className={`relative cursor-pointer select-none py-2 pl-8 pr-4 hover:bg-indigo-100 hover:text-indigo-900 ${
                       item[optionText] === adapter.value
-                        ? "bg-blue-100 text-blue-900"
+                        ? "bg-indigo-100 text-indigo-900"
                         : "text-gray-900"
                     }`}>
                     <>

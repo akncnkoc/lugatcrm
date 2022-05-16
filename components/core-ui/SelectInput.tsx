@@ -10,6 +10,7 @@ const SelectInput: React.FC<{
   onSelectChange?: React.Dispatch<SetStateAction<any>>
   onTextChange?: React.Dispatch<SetStateAction<any>>
   options?: SelectOptions[]
+  asyncData?: string
   selectTitle: string
   inputTitle: string
   selectOptionText: string
@@ -22,6 +23,7 @@ const SelectInput: React.FC<{
     options,
     onSelectChange,
     onTextChange,
+    asyncData,
     textValue,
     selectTitle,
     inputTitle,
@@ -34,10 +36,12 @@ const SelectInput: React.FC<{
   return (
     <Grid col={3} row={1} className={"h-min"}>
       <Select
-        options={options}
+        options={!asyncData && options || null}
+        async={asyncData && true}
         onChange={(value) =>
           onSelectChange((prevState) => ({ ...prevState, [selectName]: value }))
         }
+        asyncLoadUrl={asyncData && asyncData}
         title={selectTitle}
         optionText={selectOptionText}
         optionValue={selectOptionValue}

@@ -7,6 +7,7 @@ import React, {
 } from "react"
 import Modal from "../components/core-ui/Modal"
 
+//FIXME: find to way to make sense
 type ModalContextProps = {
   setModal?: Dispatch<SetStateAction<any>>
   setStaticBackdrop?: Dispatch<SetStateAction<any>>

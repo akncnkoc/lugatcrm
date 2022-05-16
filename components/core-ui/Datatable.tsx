@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { Children, useEffect, useState } from "react"
 import { SelectOptions } from "./Select"
 import { Button } from "./Button"
 import { DatatablePageSizeSelector } from "./datatable/DatatablePageSizeSelector"
@@ -14,8 +14,9 @@ export interface DatatableDataShape {
 interface DatatableProps {
   columns: Array<string>
   options?: DatableOptions
-  data: DatatableDataShape[]
+  data?: DatatableDataShape[]
   render?: Function
+  asyncData?: string
 }
 
 export type DatatableState = {
@@ -40,7 +41,7 @@ const preparePageSizeOptions = () => {
 }
 
 export const Datatable: React.FC<DatatableProps> = (props) => {
-  const { columns, options, data, render } = props
+  const { columns, options, data, render, asyncData } = props
 
   const [pageItems, setPageItems] = useState<number[]>([])
 
@@ -57,52 +58,47 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
     pageSize: 5,
   })
   const [innerData, setInnerData] = useState<DatatableDataShape[]>()
+  const [asyncItems, setAsyncItems] = useState<DatatableDataShape[]>([])
 
-  const calculatePages = () => {
-    let totalPages = Math.ceil(data.length / adapter.pageSize)
-    if (totalPages <= adapter.pageSize) {
-      setAdapter((prevState) => ({
-        ...prevState,
-        startPage: 1,
-        endPage: totalPages,
-      }))
-    } else {
-      let maxPagesBeforeCurrentPage = Math.floor(options.pageSize / 2)
-      let maxPagesAfterCurrentPage = Math.ceil(options.pageSize / 2) - 1
-      if (adapter.currentPage <= maxPagesBeforeCurrentPage) {
-        setAdapter((prevState) => ({
-          ...prevState,
-          startPage: 1,
-          endPage: adapter.pageSize,
-        }))
-      } else if (adapter.currentPage + maxPagesAfterCurrentPage >= totalPages) {
-        setAdapter((prevState) => ({
-          ...prevState,
-          startPage: totalPages - adapter.pageSize + 1,
-          endPage: totalPages,
-        }))
-      } else {
-        setAdapter((prevState) => ({
-          ...prevState,
-          startPage: adapter.currentPage - maxPagesBeforeCurrentPage,
-          endPage: adapter.currentPage + maxPagesAfterCurrentPage,
-        }))
-      }
-    }
-  }
+  const calculatePages = (itemLength: number = 0) => {
+    let totalPages = data
+      ? Math.floor(data.length / adapter.pageSize)
+      : Math.floor(itemLength / adapter.pageSize)
 
-  useEffect(() => {
-    let pageNumbers = Array.from(
-      Array(adapter.endPage + 1 - adapter.startPage).keys()
-    ).map((item) => item)
+    // if (totalPages <= adapter.pageSize) {
+    //   setAdapter((prevState) => ({
+    //     ...prevState,
+    //     startPage: 0,
+    //     endPage: totalPages,
+    //   }))
+    // } else {
+    //   let maxPagesBeforeCurrentPage = Math.floor(adapter.pageSize / 2)
+    //   let maxPagesAfterCurrentPage = Math.ceil(adapter.pageSize / 2) - 1
+    //   if (adapter.currentPage <= maxPagesBeforeCurrentPage) {
+    //     setAdapter((prevState) => ({
+    //       ...prevState,
+    //       startPage: 0,
+    //       endPage: adapter.pageSize,
+    //     }))
+    //   } else if (adapter.currentPage + maxPagesAfterCurrentPage >= totalPages) {
+    //     setAdapter((prevState) => ({
+    //       ...prevState,
+    //       startPage: totalPages - adapter.pageSize + 1,
+    //       endPage: totalPages,
+    //     }))
+    //   } else {
+    //     setAdapter((prevState) => ({
+    //       ...prevState,
+    //       startPage: adapter.currentPage - maxPagesBeforeCurrentPage,
+    //       endPage: adapter.currentPage + maxPagesAfterCurrentPage,
+    //     }))
+    //   }
+    // }
+    let pageNumbers = Array.from(Array(totalPages).keys()).map((item) => item)
     setPageItems(pageNumbers)
-    calculatePages()
-  }, [
-    adapter.endPage,
-    adapter.startPage,
-    adapter.pageSize,
-    adapter.currentPage,
-  ])
+
+    console.log("totalPage : " + totalPages)
+  }
 
   const updatePage = (page: number) => {
     if (page <= 1) {
@@ -147,7 +143,7 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
   useEffect(() => {
     setInnerData([])
 
-    if (data && data.length >= 1) {
+    if (data && data.length >= 1 && !asyncData) {
       let innerDataSliced = data.slice(
         (adapter.currentPage - 1) * adapter.pageSize,
         adapter.currentPage * adapter.pageSize
@@ -175,12 +171,16 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
     adapter.isFirstPage,
   ])
 
+  useEffect(() => {
+    loadData()
+  }, [asyncData])
+
   const prepareColumns = (tbody = true) => {
     return (
       <tr className={"overflow-hidden"}>
         {columns.map((title: string, index) => (
           <th
-            className={` border-gray-200 px-6 py-3 text-[13px] font-medium font-medium leading-[20px] text-table-text-color
+            className={` border-gray-200 px-6 py-3 text-[13px] font-medium leading-[20px] text-table-text-color
               ${tbody && index === 0 && "border-tl border-t border-b border-r"}
               ${
                 tbody &&
@@ -209,7 +209,73 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
       </tr>
     )
   }
-
+  const loadData = async (page = 0, size = 5) => {
+    if (asyncData) {
+      setAdapter((prevState) => ({ ...prevState, loading: true }))
+      fetch(asyncData + "?all=true")
+        .then((res) => res.json())
+        .then((res) => {
+          if (res && res.length >= 1) {
+            let innerDataSliced = res.slice(
+              (adapter.currentPage - 1) * adapter.pageSize,
+              adapter.currentPage * adapter.pageSize
+            )
+            setAsyncItems(innerDataSliced)
+            setAdapter((prevState) => ({
+              ...prevState,
+              totalDataCount: res.length,
+              loading: false,
+              notfound: false,
+            }))
+          } else if (res && res.length === 0) {
+            setAdapter((prevState) => ({
+              ...prevState,
+              notfound: true,
+              loading: false,
+            }))
+          }
+          calculatePages(res.length)
+        })
+        .catch((err) => {
+          setAdapter((prevState) => ({
+            ...prevState,
+            loading: false,
+            notfound: true,
+          }))
+        })
+    }
+  }
+  const loadSlicedData = async (page = 0, size = 5) => {
+    if (asyncData) {
+      setAdapter((prevState) => ({ ...prevState, loading: true }))
+      fetch(asyncData + "?page=" + page.toString() + "&size=" + size.toString())
+        .then((res) => res.json())
+        .then((res) => {
+          if (res && res.length >= 1) {
+            setAsyncItems(res)
+            setAdapter((prevState) => ({
+              ...prevState,
+              loading: false,
+              notfound: false,
+              currentPage: page,
+            }))
+          } else if (res && res.length === 0) {
+            setAdapter((prevState) => ({
+              ...prevState,
+              notfound: true,
+              loading: false,
+            }))
+          }
+        })
+        .catch((err) => {
+          setAdapter((prevState) => ({
+            ...prevState,
+            loading: false,
+            notfound: true,
+          }))
+        })
+    }
+  }
   return (
     <div id="datatable" className={`flex h-full w-full flex-col p-4`}>
       <div id="table-header" className="flex justify-between">
@@ -249,27 +315,36 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                     </tr>
                   )}
                   {render &&
-                    innerData &&
+                    data &&
+                    !asyncData &&
                     render({
                       innerData,
+                    })}
+                  {render &&
+                    !data &&
+                    asyncData &&
+                    render({
+                      asyncItems,
+                      loadData,
                     })}
                 </tbody>
                 <tfoot>{prepareColumns(false)}</tfoot>
               </table>
               <div className={"my-4 flex w-full justify-between"}>
                 <div id={"show-results-count"}>
-                  <span>{data.length} kayıt bulundu</span>
+                  <span>{adapter.totalDataCount} kayıt bulundu</span>
                 </div>
                 <div className="flex gap-x-2">
                   <Button
                     className={"bg-indigo-500 text-white hover:bg-indigo-600"}
-                    disabled={adapter.isFirstPage}
+                    disabled={adapter.currentPage == 0}
                     onClick={() => {
-                      updatePage(adapter.currentPage - 1)
+                      if (!asyncData) updatePage(adapter.currentPage - 1)
+                      else loadSlicedData(adapter.currentPage - 1)
                     }}>
                     Önceki
                   </Button>
-                  {pageItems.map((i) => (
+                  {/* {pageItems.map((i) => (
                     <Button
                       key={i + 1}
                       className={`text-sm ${
@@ -277,16 +352,18 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                         "!bg-transparent text-[#7E8299]"
                       }`}
                       onClick={() => {
-                        updatePage(i + 1)
+                        if (!asyncData) updatePage(i)
+                        else loadSlicedData(i)
                       }}>
                       {i + 1}
                     </Button>
-                  ))}
+                  ))} */}
                   <Button
                     className={"bg-indigo-500 text-white hover:bg-indigo-600"}
                     disabled={adapter.isLastPage}
                     onClick={() => {
-                      updatePage(adapter.currentPage + 1)
+                      if (!asyncData) updatePage(adapter.currentPage + 1)
+                      else loadSlicedData(adapter.currentPage + 1)
                     }}>
                     Sonraki
                   </Button>
@@ -305,7 +382,7 @@ export const TableDataCell = (props) => {
     <td
       className={`font-13px whitespace-nowrap border-r border-b border-gray-200 p-[13px] leading-[20px] text-[#3f4254] ${
         props.center && "flex justify-center"
-      }`}>
+      } ${Children.count(props.children) >= 2 && "space-x-2"}`}>
       {props.children}
     </td>
   )

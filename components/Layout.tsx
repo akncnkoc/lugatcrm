@@ -3,15 +3,19 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import React from "react"
 import Logo from "../assets/logo.png"
+import ConfirmDialog from "./core-ui/ConfirmDialog"
 import Toast from "./core-ui/Toast"
 const Layout: React.FC<any> = (props) => {
   return (
     <div className="overfloy-y-hidden flex h-screen w-full">
       <Toast />
       <Aside />
+      <ConfirmDialog />
       <div className="flex h-screen flex-1 flex-col bg-gray-filler">
         <Header />
-        <div className="flex overflow-y-scroll py-8 px-8 container mx-auto">{props.children}</div>
+        <div className="container mx-auto flex overflow-y-scroll py-8 px-8">
+          {props.children}
+        </div>
       </div>
     </div>
   )

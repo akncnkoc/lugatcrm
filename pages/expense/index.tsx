@@ -1,32 +1,30 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { BiEditAlt } from "react-icons/bi"
 import { Button, LinkButton } from "../../components/core-ui/Button"
 import Card, {
   CardActions,
   CardContent,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "../../components/core-ui/Card"
 import {
   Datatable,
   TableDataCell,
-  TableRow,
+  TableRow
 } from "../../components/core-ui/Datatable"
-import { GetServerSideProps } from "next"
-import { MomentFormatted, MomentLocalized } from "../../lib/momentLocalized"
-import { BiEditAlt } from "react-icons/bi"
 import { Tooltip } from "../../components/core-ui/Tooltip"
-import { getAllExpenses } from "../../server/expense.server"
-import { toast } from "../../components/core-ui/Toast"
-import Modal from "../../components/core-ui/Modal"
 import { useModal } from "../../context/modal-context"
+import { MomentFormatted, MomentLocalized } from "../../lib/momentLocalized"
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const expenses = await getAllExpenses()
-
-  return { props: { expenses } }
-}
 const Expense: React.FC<any> = (props) => {
   const { setModal } = useModal()
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    fetch("/api/expense")
+      .then(res => res.json())
+      .then(res => setData(res))
+  }, []);
+
   return (
     <>
       <Card>
@@ -47,12 +45,12 @@ const Expense: React.FC<any> = (props) => {
               "Son Düzenlenme Tarihi",
               "İşlemler",
             ]}
-            data={props?.expenses}
+            asyncData={"/api/expense"}
             options={{
               pageSize: 5,
             }}
-            render={({ innerData }) => {
-              return innerData.map((dataItem, index) => (
+            render={({ asyncItems }) => {
+              return asyncItems.map((dataItem, index) => (
                 <TableRow key={index}>
                   <TableDataCell> {dataItem.expense_type.name}</TableDataCell>
                   <TableDataCell> {dataItem.safe.name}</TableDataCell>

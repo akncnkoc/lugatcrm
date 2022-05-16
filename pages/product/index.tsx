@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 }
 const Product: React.FC<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = (props) => {
+> = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { setModal, setStaticBackdrop } = useModal()
 
   useEffect(() => {
@@ -58,12 +58,12 @@ const Product: React.FC<
               "Tedarikçiler",
               "İşlemler",
             ]}
-            data={props.products}
+            asyncData={"/api/product"}
             options={{
               pageSize: 5,
             }}
-            render={({ innerData }) => {
-              return innerData.map((dataItem, index) => (
+            render={({ asyncItems }) => {
+              return asyncItems.map((dataItem, index) => (
                 <TableRow key={index}>
                   <TableDataCell> {dataItem.expense_type.name}</TableDataCell>
                   <TableDataCell> {dataItem.safe.name}</TableDataCell>

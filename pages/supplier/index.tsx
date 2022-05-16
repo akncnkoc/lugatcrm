@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react"
 import Head from "next/head"
+import React, { useEffect, useState } from "react"
+import { BiEdit, BiPlusCircle, BiTrash } from "react-icons/bi"
+import { Button } from "../../components/core-ui/Button"
 import Card, {
   CardActions,
   CardContent,
   CardHeader,
   CardTitle,
 } from "../../components/core-ui/Card"
-import { Button } from "../../components/core-ui/Button"
-import { BiEdit, BiPlusCircle } from "react-icons/bi"
 import {
   Datatable,
   TableDataCell,
   TableRow,
 } from "../../components/core-ui/Datatable"
 import { useModal } from "../../context/modal-context"
-import { Input } from "../../components/core-ui/Input"
 import { SupplierCreateModal } from "../../modals/supplier/create"
 import { SupplierEditModal } from "../../modals/supplier/edit"
+import useConfirm from "./../../modals/global/useConfirm"
 
 const Supplier: React.FC = (props) => {
-  const [supplierData, setSupplierData] = useState<any>([])
   const { setModal, setStaticBackdrop } = useModal()
-  const getData = async () => {
-    await fetch("/api/supplier")
-      .then((res) => res.json())
-      .then((suppliers) => setSupplierData(suppliers))
+  const { useconfirm } = useConfirm()
+
+  const createConfirmDialog = async () => {
+    let isConfirmed = await useconfirm("Silmek istiyormusunuz")
+    if (isConfirmed) console.log("okey")
+    else console.log("iptal")
   }
   useEffect(() => {
     setStaticBackdrop(true)
-    getData()
   }, [])
 
   return (
@@ -42,7 +42,7 @@ const Supplier: React.FC = (props) => {
           <CardActions>
             <Button
               icon={<BiPlusCircle />}
-              onClick={() => setModal(createActionModal(getData))}>
+              onClick={() => setModal(createActionModal())}>
               Yeni Kayıt
             </Button>
           </CardActions>
@@ -50,9 +50,12 @@ const Supplier: React.FC = (props) => {
         <CardContent>
           <Datatable
             columns={["Tedarikçi Adı", "Email", "Telefon", "İşlemler"]}
-            data={supplierData}
-            render={({ innerData }) => {
-              return innerData.map((supplierItem, index) => (
+            asyncData="/api/supplier"
+            options={{
+              pageSize:5
+            }}
+            render={({ asyncItems }) => {
+              return asyncItems.map((supplierItem, index) => (
                 <TableRow key={index}>
                   <TableDataCell>{supplierItem.name}</TableDataCell>
                   <TableDataCell>{supplierItem.email}</TableDataCell>
@@ -61,8 +64,11 @@ const Supplier: React.FC = (props) => {
                     <Button
                       icon={<BiEdit className="text-base" />}
                       onClick={() =>
-                        setModal(editActionModal(supplierItem.id, getData))
+                        setModal(editActionModal(supplierItem.id))
                       }></Button>
+                    <Button
+                      icon={<BiTrash className="text-base" />}
+                      onClick={() => createConfirmDialog()}></Button>
                   </TableDataCell>
                 </TableRow>
               ))
@@ -74,11 +80,15 @@ const Supplier: React.FC = (props) => {
   )
 }
 
-const createActionModal = (getData) => {
-  return <SupplierCreateModal updateTable={getData} />
+const createActionModal = () => {
+  return <SupplierCreateModal />
 }
-const editActionModal = (id: string, getData) => {
-  return <SupplierEditModal id={id} updateTable={getData} />
+const editActionModal = (id: string) => {
+  return <SupplierEditModal id={id} />
+}
+
+const createConfirmDialog = async () => {
+  await confirm("Silmek istiyormusunuz")
 }
 
 export default Supplier

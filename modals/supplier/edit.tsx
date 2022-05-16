@@ -6,8 +6,7 @@ import { useModal } from "../../context/modal-context"
 
 export const SupplierEditModal: React.FC<{
   id: string
-  updateTable?: Function
-}> = ({ id, updateTable }) => {
+}> = ({ id }) => {
   const { unSetModal } = useModal()
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -26,7 +25,6 @@ export const SupplierEditModal: React.FC<{
         body: JSON.stringify(body),
       })
       unSetModal()
-      updateTable && updateTable()
     } catch (error) {
       console.error(error)
     }

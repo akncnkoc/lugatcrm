@@ -38,7 +38,11 @@ export const CardHeader: React.FC<{
   )
 }
 export const CardContent = (props) => {
-  return <div className="h-max w-full py-4 border-t border-gray-filler">{props.children}</div>
+  return (
+    <div className={`h-max w-full border-t border-gray-filler py-4 ${props.className}`}>
+      {props.children}
+    </div>
+  )
 }
 export const CardTitle = (props) => {
   return <h1 className="font-medium">{props.children}</h1>

@@ -4,9 +4,7 @@ import { Grid } from "../../components/core-ui/Miscellaneous"
 import { Button } from "../../components/core-ui/Button"
 import { useModal } from "../../context/modal-context"
 
-export const SupplierCreateModal: React.FC<{
-  updateTable?: Function
-}> = ({updateTable}) => {
+export const SupplierCreateModal: React.FC = () => {
   const { unSetModal } = useModal()
   const [form, setForm] = useState({
     name: "",
@@ -23,7 +21,6 @@ export const SupplierCreateModal: React.FC<{
         body: JSON.stringify(body),
       })
       unSetModal()
-      updateTable && updateTable();
     } catch (error) {
       console.error(error)
     }

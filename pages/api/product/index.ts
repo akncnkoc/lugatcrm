@@ -10,14 +10,14 @@ export default async function handle(
   } = req as any
   switch (req.method) {
     case "POST":
-      await createSupplier(req.body, res)
+      await createProduct(req.body, res)
       break
     case "PUT":
       await updateSupplier(id, req.body, res)
       break
     case "GET":
       if (!id) {
-        await getSuppilers(req, res)
+        await getProducts(req, res)
       } else {
         await getSuppiler(id, res)
       }
@@ -26,7 +26,7 @@ export default async function handle(
   }
 }
 
-const getSuppilers = async (req: NextApiRequest, res: NextApiResponse) => {
+const getProducts = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     let {
       query: { page, size, all },
@@ -35,9 +35,18 @@ const getSuppilers = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!size) size = 5
     let result
     if (all) {
-      result = await prisma.supplier.findMany({})
+      result = await prisma.product.findMany({
+        include: {
+          buy_price_safe: true,
+          sale_price_safe: true
+        }
+      })
     } else {
-      result = await prisma.supplier.findMany({
+      result = await prisma.product.findMany({
+        include: {
+          buy_price_safe: true,
+          sale_price_safe: true
+        },
         skip: Number(page) * Number(size),
         take: Number(size),
       })
@@ -50,9 +59,9 @@ const getSuppilers = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-const createSupplier = async (body, res) => {
+const createProduct = async (body, res) => {
   try {
-    const result = await prisma.supplier.create({
+    const result = await prisma.product.create({
       data: body,
     })
     res.status(200).json(result)

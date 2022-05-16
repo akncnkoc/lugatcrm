@@ -18,9 +18,23 @@ export default async function handle(
       res.status(200).json(await updateExpenseData(id, req.body))
       break
     case "GET":
-      res.send("hello")
+      await getExpenses(res)
       break
   }
 
   //TODO: change any to a proper state
+}
+
+const getExpenses = async (res: NextApiResponse) => {
+  try {
+    const result = await prisma.expense.findMany({
+      include: {
+        expense_type: true,
+        safe: true,
+      }
+    })
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(500).json(err)
+  }
 }

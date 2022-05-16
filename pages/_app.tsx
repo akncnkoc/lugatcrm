@@ -1,10 +1,11 @@
-import Layout from "../components/Layout"
+import Router from "next/router"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
-import "../styles/globals.css"
-import Router from "next/router"
+import { useEffect } from 'react'
+import Layout from "../components/Layout"
 import { ModalProvider } from "../context/modal-context"
-import { useEffect } from 'react';
+import { ConfirmContextProvider } from "../modals/global/useConfirm"
+import "../styles/globals.css"
 
 Router.events.on("routeChangeStart", () => NProgress.start())
 Router.events.on("routeChangeComplete", () => NProgress.done())
@@ -24,9 +25,11 @@ export default function App({ Component, pageProps }) {
   }, []);
   return (
     <ModalProvider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <ConfirmContextProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </ConfirmContextProvider>
     </ModalProvider>
   )
 }
