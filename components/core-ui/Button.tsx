@@ -9,6 +9,7 @@ type ButtonProps = {
   ref?: string | undefined
   icon?: string | React.ReactNode | React.ReactNode[]
   loading?: boolean
+  children?: string | React.ReactNode | React.ReactNode[]
 }
 
 const ButtonStyled = styled.button<ButtonProps>`
@@ -30,14 +31,14 @@ const ButtonStyled = styled.button<ButtonProps>`
     pointer-events: none;
     opacity: 50%;
   }
-  display: ${(props) => props.icon && "flex"};
-  align-items: ${(props) => props.icon && "center"};
+  display: ${(props) => props.icon ? "flex": "block"};
+  align-items: ${(props) => props.icon ? "center" : "start"};
   visibility: ${(props) => props.hidden && "hidden"};
 `
 
 export const Button: React.FC<ButtonProps> = (props) => {
   return (
-    <ButtonStyled>
+    <ButtonStyled icon={props.icon} hidden={props.hidden}>
       {props.loading && (
         <div
           style={{
@@ -47,6 +48,16 @@ export const Button: React.FC<ButtonProps> = (props) => {
           <VscLoading className="animate-spin text-base" />
         </div>
       )}
+      {props.icon && (
+        <span
+          style={{
+            display: "block",
+            marginRight: props.children && "4px",
+          }}>
+          {props.icon}
+        </span>
+      )}
+      {props.children}
     </ButtonStyled>
   )
 }
