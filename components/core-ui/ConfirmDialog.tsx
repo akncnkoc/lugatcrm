@@ -1,27 +1,58 @@
 import React from "react"
 import { createPortal } from "react-dom"
 import { useConfirm } from "./../../modals/global/useConfirm"
+import styled from "styled-components"
+import { Button } from "./Button"
+const PortalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 9999999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+`
+const ConfirmDialogStyled = styled.div`
+  z-index: 999999;
+  padding: 16px;
+  background-color: white;
+  width: 400px;
+  position: absolute;
+  top: 200px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+`
+const ConfirmDialogFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+`
 
 const ConfirmDialog = () => {
   const { onConfirm, onCancel, confirmState } = useConfirm()
-  const portalElement = typeof document !== "undefined" ? document.getElementById("__next") : null;
+  const portalElement =
+    typeof document !== "undefined" ? document.getElementById("__next") : null
   const component = confirmState.show ? (
-    <div className="portal-overlay">
-      <div className="confirm-dialog">
+    <PortalOverlay>
+      <ConfirmDialogStyled>
         <p>{confirmState?.text && confirmState.text}</p>
-        <div className="confirm-dialog__footer">
-          <div className="btn" onClick={onConfirm}>
+        <ConfirmDialogFooter>
+          <Button onClick={onConfirm}>
             Evet
-          </div>
-          <div className="btn" onClick={onCancel}>
+          </Button>
+          <Button onClick={onCancel}>
             İptal Et
-          </div>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </ConfirmDialogFooter>
+      </ConfirmDialogStyled>
+    </PortalOverlay>
   ) : null
 
-  return component ? createPortal(component, portalElement) : null;
+  return component ? createPortal(component, portalElement) : null
 }
 
-export default ConfirmDialog;
+export default ConfirmDialog
