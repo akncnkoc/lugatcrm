@@ -1,74 +1,52 @@
 import React from "react"
+import styled from "styled-components"
 
-type CardProps = {
-  fullWidth?: boolean
-  bgColor?: string
-  shadow?: boolean
-  children?: string | JSX.Element | JSX.Element[] | undefined
-}
-const Card: React.FC<CardProps> = (props) => {
-  const { fullWidth = true, bgColor, shadow = true } = props
-  return (
-    <div
-      className={`
-        h-full
-        rounded
-        px-4
-        ${fullWidth && "w-full"} 
-        ${(bgColor && bgColor) || "bg-white"} 
-        ${shadow && "shadow shadow-aside-filler/20"}        
-      `}>
-      {props.children}
-    </div>
-  )
-}
+const Card = styled.div`
+  height: 100%;
+  width: 100%;
+  border-radius: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: white;
+  box-shadow: 0px 1px 3px rgba(30 30 45 / 0.2);
+`
+export const CardHeader = styled.div<{ hasAction?: boolean }>`
+  display: flex;
+  height: 64px;
+  width: 100%;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  justify-content: ${(props) => props.hasAction && "space-between"};
+`
 
-export const CardHeader: React.FC<{
-  children?: JSX.Element[] | JSX.Element | string | undefined
-  hasAction?: boolean
-}> = (props) => {
-  const { children, hasAction = false } = props
-  return (
-    <div
-      className={`flex h-16 w-full items-center py-10 px-4 ${
-        hasAction && "justify-between"
-      }`}>
-      {children}
-    </div>
-  )
-}
-export const CardContent = (props) => {
-  return (
-    <div className={`h-max w-full border-t border-gray-filler py-4 ${props.className}`}>
-      {props.children}
-    </div>
-  )
-}
-export const CardTitle = (props) => {
-  return <h1 className="font-medium">{props.children}</h1>
-}
-
-export const CardActions = (props) => {
-  return <div className="flex space-x-2">{props.children}</div>
-}
-
-export const CardFooter: React.FC<
-  {
-    children?: JSX.Element[] | JSX.Element | string | undefined
-    hasAction?: boolean
-    className?: string
-  } & React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
-> = (props) => {
-  const { children, className, ...args } = props
-  return (
-    <div
-      className={`flex h-16 w-full items-center justify-end ${className}`}
-      {...args}>
-      {children}
-    </div>
-  )
-}
+export const CardContent = styled.div`
+  height: max-content;
+  width: 100%;
+  border-top: 1px solid;
+  border-top-color: rgb(238 240 248 / 1);
+  padding-bottom: 16px;
+  padding-top: 16px;
+`
+export const CardTitle = styled.h1`
+  font-weight: 500;
+`
+export const CardActions = styled.div`
+  display: flex;
+  > {
+    margin-right: calc(0.5rem * 0);
+    margin-left: calc(0.5rem * calc(1 - 0));
+    border: 1px solid;
+    border-color: rgb(238 240 248 / 1);
+  }
+`
+export const CardFooter = styled.div`
+  display: flex;
+  height: 64px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+`
 export default Card
