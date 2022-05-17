@@ -2,13 +2,12 @@ import Router from "next/router"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
 import { useEffect } from "react"
+import { createGlobalStyle } from "styled-components"
 import Layout from "../components/Layout"
 import { ModalProvider } from "../context/modal-context"
 import { ConfirmContextProvider } from "../modals/global/useConfirm"
 import "../styles/globals.css"
 
-import { createGlobalStyle } from "styled-components"
-import Head from "next/head"
 
 const GlobalStyles = createGlobalStyle`
   @keyframes spin {
@@ -72,13 +71,6 @@ export default function App({ Component, pageProps }) {
   }, [])
   return (
     <ModalProvider>
-      <Head>
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700"
-        />
-      </Head>
       <GlobalStyles />
       <ConfirmContextProvider>
         <Layout>
