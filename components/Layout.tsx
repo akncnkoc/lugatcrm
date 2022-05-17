@@ -29,14 +29,14 @@ const Layout: React.FC<any> = (props) => {
           backgroundColor: "rgb(238 240 248)",
         }}>
         <Header />
-        <div className="container"
+        <div
+          className="container"
           style={{
             margin: "0 auto",
             display: "flex",
             overflowY: "scroll",
-            padding: "32px"
-          }}
-        >
+            padding: "32px",
+          }}>
           {props.children}
         </div>
       </div>
@@ -60,28 +60,26 @@ const Aside = () => {
     </AsideStyled>
   )
 }
-
+const AsideMenuItemStyled = styled.div<{ href: string; asPath: string }>`
+  display: flex;
+  height: 44px;
+  cursor: pointer;
+  align-items: center;
+  padding: 0px 24px;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 20px;
+  color: rgb(162 163 183);
+  transition: 500ms color, background-color;
+  background-color: ${(props) =>
+    props.href === props.asPath ? "rgb(27 27 40 / 1)" : ""};
+  &:hover {
+    background-color: rgb(27 27 40 / 1);
+  }
+`
 const AsideMenu = () => {
-  
   const router = useRouter()
 
-  const AsideMenuItemStyled = styled.div<{ href: string }>`
-    display: flex;
-    height: 44px;
-    cursor: pointer;
-    align-items: center;
-    padding: 0px 24px;
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 20px;
-    color: rgb(162 163 183);
-    transition: 500ms color, background-color;
-    background-color: ${(props) =>
-      props.href === router.asPath ? "rgb(27 27 40 / 1)" : ""};
-    &:hover {
-      background-color: rgb(27 27 40 / 1);
-    }
-  `
   return (
     <div
       style={{
@@ -90,7 +88,9 @@ const AsideMenu = () => {
       }}>
       {asideMenuItems.map((item, index) => (
         <Link key={index} href={item.href} passHref>
-          <AsideMenuItemStyled href={item.href}>{item.name}</AsideMenuItemStyled>
+          <AsideMenuItemStyled href={item.href} asPath={router.asPath}>
+            {item.name}
+          </AsideMenuItemStyled>
         </Link>
       ))}
     </div>
