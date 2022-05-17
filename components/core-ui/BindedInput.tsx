@@ -31,13 +31,13 @@ const BindedInputSelf = styled.input`
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+  padding: 8px 12px;
+  outline: none;
   &:focus {
-    border-color: rgb(165 180 252);
-    box-shadow: var(--tw-ring-inset) 0 0 0 0 #fff, 0 0 rgb(199 210 254),
-      var(0 0 #0000, 0 0 #0000);
+    box-shadow: 0 0 0 2px rgba(79 70 229 / 0.27);
+    border-color: rgba(79 70 229 / 0.27);
   }
 `
-
 
 export const BindedInput: React.FC<InputProps> = (props) => {
   return (

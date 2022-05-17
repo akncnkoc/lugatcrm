@@ -1,19 +1,13 @@
-const Fillable: React.FC<{
-  children?: React.ReactNode
+import styled from "styled-components"
+
+type FillableProps = {
   rowSpan?: number
   colSpan?: number
-  flex?: number
-}> = (props) => {
-  const { rowSpan, colSpan, children, flex } = props
-  return (
-    <div
-      style={{
-        gridRow: "span " + rowSpan,
-        gridColumn: "span " + colSpan,
-      }}>
-      {children}
-    </div>
-  )
 }
+
+const Fillable = styled.div<FillableProps>`
+  grid-row: "span " + ${(props) => props.rowSpan};
+  grid-column: "span" + ${(props) => props.colSpan};
+`
 
 export default Fillable
