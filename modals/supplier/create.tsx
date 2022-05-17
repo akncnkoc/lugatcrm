@@ -29,7 +29,7 @@ export const SupplierCreateModal: React.FC = () => {
     <div>
       <h3 className={"mb-4 text-center text-lg"}>Tedarikçi Ekle</h3>
       <form onSubmit={submitData}>
-        <Grid row={3} col={1} className={"gap-y-4 px-2"}>
+        <Grid row={3} column={1} className={"gap-y-4 px-2"}>
           <Input
             label={"Adı"}
             name={"name"}

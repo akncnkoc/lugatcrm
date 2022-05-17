@@ -4,14 +4,12 @@ import styled from "styled-components"
 import { VscLoading } from "react-icons/vsc"
 
 type ButtonProps = {
-  bgColor?: string
   hidden?: boolean
-  ref?: string | undefined
   icon?: string | React.ReactNode | React.ReactNode[]
   loading?: boolean
   children?: string | React.ReactNode | React.ReactNode[]
+  onClick?: Function
 }
-
 const ButtonStyled = styled.button<ButtonProps>`
   position: relative;
   border-radius: 6px;
@@ -31,14 +29,19 @@ const ButtonStyled = styled.button<ButtonProps>`
     pointer-events: none;
     opacity: 50%;
   }
-  display: ${(props) => props.icon ? "flex": "block"};
-  align-items: ${(props) => props.icon ? "center" : "start"};
+  display: ${(props) => (props.icon ? "flex" : "block")};
+  align-items: ${(props) => (props.icon ? "center" : "start")};
   visibility: ${(props) => props.hidden && "hidden"};
 `
 
 export const Button: React.FC<ButtonProps> = (props) => {
+  const { loading, icon, hidden, children, onClick, ...args } = props
   return (
-    <ButtonStyled icon={props.icon} hidden={props.hidden}>
+    <ButtonStyled
+      icon={icon}
+      hidden={hidden}
+      onClick={(e) => onClick && onClick(e)}
+      {...args}>
       {props.loading && (
         <div
           style={{

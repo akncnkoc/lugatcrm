@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react"
 import { IoIosCloseCircle } from "react-icons/io"
-
+import styled from "styled-components"
 type ModalProps = {
   modal?: any
   children?: React.ReactNode
@@ -8,6 +8,38 @@ type ModalProps = {
   staticBackdrop?: boolean
 }
 
+const ModalBackdrop = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.1);
+`
+
+const ModalContainer = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  max-height: min-content;
+  min-width: 500px;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  background-color: white;
+  padding: 16px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+`
+const ModalCloseContainer = styled.div`
+  position: absolute;
+  top: -56px;
+  right: -16px;
+  height: 132px;
+  cursor: pointer;
+  font-size: 24px;
+  color: rgb(107 114 128);
+`
 const Modal: React.FC<ModalProps> = (props) => {
   const { modal, unSetModal, staticBackdrop } = props
   const modalContainer = useRef<HTMLDivElement>(null)
@@ -31,26 +63,16 @@ const Modal: React.FC<ModalProps> = (props) => {
   }, [modal, unSetModal, staticBackdrop])
 
   return (
-    <div
-      ref={modalContainer}
-      className={
-        "absolute top-0 left-0 z-999 h-screen w-screen select-none bg-black/10"
-      }>
-      <div
-        className={`show fixed top-1/2 bottom-7 left-1/2 max-h-min min-w-500px -translate-y-1/2 -translate-x-1/2 transform rounded-md bg-white p-4 shadow`}
-        id={"modal"}>
-        <div className={"relative"}>
-          <div
-            onClick={() => unSetModal()}
-            className={
-              "absolute -top-14 -right-4 h-32 cursor-pointer text-2xl text-gray-500"
-            }>
-            <IoIosCloseCircle className={"text-3xl"} />
-          </div>
+    <ModalBackdrop ref={modalContainer}>
+      <ModalContainer className={`show`} id={"modal"}>
+        <div style={{ position: "relative" }}>
+          <ModalCloseContainer onClick={() => unSetModal()}>
+            <IoIosCloseCircle style={{ fontSize: "30px" }} />
+          </ModalCloseContainer>
         </div>
-        <div className={"relative h-full w-full"}>{modal}</div>
-      </div>
-    </div>
+        <div style={{position: "relative", width: "100%", height: "100%"}}>{modal}</div>
+      </ModalContainer>
+    </ModalBackdrop>
   )
 }
 
