@@ -1,8 +1,41 @@
 import React, { createRef, useEffect, useState } from "react"
+import styled from "styled-components"
+import FadeIn from "./FadeIn"
 
 type TooltipProps = {
   children?: string | undefined
 }
+
+const TooltipContainer = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: max-content;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgb(79 70 229);
+  padding: 6px 12px;
+  color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.50), 0 1px 2px 0 rgb(0 0 0 / 0.50);
+  transition: 500ms color, box-shadow, background-color, opacity;
+  z-index: 999;
+`
+
+const TooltipArrow = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  display: inline-block;
+  height: 0;
+  width: 0;
+  transform: translateX(-50%);
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  border-top: 6px solid rgb(79 70 229);
+`
 
 export const Tooltip: React.FC<TooltipProps> = (props) => {
   const { children } = props
@@ -28,19 +61,15 @@ export const Tooltip: React.FC<TooltipProps> = (props) => {
   }, [tooltipRef.current])
 
   return (
-    <div
-      ref={tooltipRef}
-      style={{ zIndex: 999, opacity: adapter.tooltipShown ? 1 : 0 }}
-      className={`arrow-down absolute bottom-full left-1/2 w-max -translate-x-1/2 transform items-center justify-center rounded-xl bg-black p-1.5 px-3 text-white shadow transition-opacity`}>
-      <div
-        className="absolute top-full left-1/2 inline-block h-0 w-0 -translate-x-1/2 transform"
-        style={{
-          borderRight: "6px solid transparent",
-          borderLeft: "6px solid transparent",
-          borderTop: "6px solid black",
-        }}
-      />
-      {children}
+    <div ref={tooltipRef}>
+      {adapter.tooltipShown && (
+        <FadeIn duration={500}>
+          <TooltipContainer>
+            <TooltipArrow />
+            {children}
+          </TooltipContainer>
+        </FadeIn>
+      )}
     </div>
   )
 }
