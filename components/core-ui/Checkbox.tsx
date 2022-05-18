@@ -1,11 +1,59 @@
 import { useEffect, useState } from "react"
 import { BiCheck } from "react-icons/bi"
+import styled from "styled-components"
 
 type CheckBoxProps = {
   children?: React.ReactNode[] | React.ReactNode | string
   onChange?: (value: boolean) => void
   value?: boolean
 }
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  min-width: 100%;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+`
+
+const CheckboxTrack = styled.div<{ selected: boolean }>`
+  position: relative;
+  display: flex;
+  height: 20px;
+  width: 44px;
+  border-radius: 9999px;
+  border: 1px solid ${(props) => (props.selected ? "#3949ab" : "#e0e0e0")};
+  background-color: ${(props) => (props.selected ? "#3949ab" : "#e0e0e0")};
+`
+
+const CheckboxTrackCircle = styled.div<{ selected: boolean }>`
+  position: absolute;
+  top: 50%;
+  height: 24px;
+  width: 24px;
+  transition: 300ms transform, background-color;
+  transform: translate(${(props) => (props.selected ? "20px" : "0")},-50%);
+  border-radius: 9999px;
+  background-color: ${(props) => (!props.selected ? "#bdbdbd" : "#1a237e")};
+`
+
+const CheckboxTrackCircleIcon = styled.div<{ selected: boolean }>`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: 300ms opacity;
+  opacity: ${(props) => (props.selected ? "100" : "0")};
+`
+
+const CheckboxChildrenContainer = styled.div`
+  margin-left: 20px;
+  user-select: none;
+  font-weight: 500;
+`
+
 const CheckBox: React.FC<CheckBoxProps> = (props) => {
   const { children, onChange, value } = props
   const [selected, setSelected] = useState<boolean>(false)
@@ -16,30 +64,20 @@ const CheckBox: React.FC<CheckBoxProps> = (props) => {
     }
   }, [value])
   return (
-    <div
-      className="flex min-w-full cursor-pointer select-none items-center"
+    <CheckboxContainer
       onClick={() => {
         setSelected(!selected)
         onChange && onChange(!selected)
       }}>
-      <div
-        className={`relative flex h-6 w-14 rounded-full border ${
-          (!selected && "border-gray-300 bg-gray-300") || "border-indigo-500 bg-indigo-500"
-        }`}>
-        <div
-          className={`absolute top-1/2 h-8 w-8 -translate-y-1/2 transform rounded-full transition-transform ${
-            !selected
-              ? "translate-x-0 bg-gray-400"
-              : "translate-x-7 bg-indigo-700"
-          }`}>
-          <div
-            className={`flex h-full w-full items-center justify-center text-white ${selected && "opacity-100" || "opacity-0"} transition-opacity`}>
+      <CheckboxTrack selected={selected}>
+        <CheckboxTrackCircle selected={selected}>
+          <CheckboxTrackCircleIcon selected={selected}>
             <BiCheck size="18" />
-          </div>
-        </div>
-      </div>
-      <div className="ml-5 select-none font-medium">{children}</div>
-    </div>
+          </CheckboxTrackCircleIcon>
+        </CheckboxTrackCircle>
+      </CheckboxTrack>
+      <CheckboxChildrenContainer>{children}</CheckboxChildrenContainer>
+    </CheckboxContainer>
   )
 }
 
