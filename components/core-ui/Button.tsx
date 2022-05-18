@@ -20,7 +20,7 @@ const ButtonStyled = styled.button<ButtonProps>`
   font-weight: 500;
   color: white;
   &:hover {
-    background-color: rgb(55 48 163 / 1);
+    background-color: rgb(55 48 163);
   }
   &:focus {
     outline: none;

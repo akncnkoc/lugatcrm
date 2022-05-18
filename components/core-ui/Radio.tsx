@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import styled from "styled-components"
 
 interface RadioTypeOptions {
   name: string
@@ -13,45 +14,73 @@ type RadioProps = {
   bindTo?: React.Dispatch<React.SetStateAction<any>>
 }
 
+const RadioOption = styled.div`
+  display: flex;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+`
+
+const RadioContainer = styled.div`
+  display: flex;
+  column-gap: 24px;
+  margin: 8px 0;
+`
+
+const RadioBiggerPart = styled.div<{ selected: boolean }>`
+  position: relative;
+  height: 36px;
+  width: 36px;
+  border-radius: 9999px;
+  transition: 500ms background-color, color;
+  background-color: ${(props) => (props.selected ? "rgb(55 48 163)" : "white")};
+  overflow: hidden;
+`
+const RadioBiggerInnerPart = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 999;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  border: 2px solid rgb(209 213 219);
+  padding: 4px;
+`
 const Radio: React.FC<RadioProps> = (props) => {
   const { name, value, options, onChange, bindTo } = props
-  const [selected, setSelected] = useState<string>("")
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
-    if(!value) setSelected(options[0].value)
+    if (!value) setSelected(options[0].value)
   }, [options])
 
   useEffect(() => {
     if (value) {
       setSelected(value)
     }
-    if(bindTo) bindTo((prevState) => ({ ...prevState, [name]: value }))
+    if (bindTo) bindTo((prevState) => ({ ...prevState, [name]: value }))
   }, [value])
 
   return (
-    <div className="flex gap-x-6">
+    <RadioContainer>
       {options &&
         options.map((item: RadioTypeOptions) => (
-          <div
+          <RadioOption
             key={item.value}
-            className="flex cursor-pointer select-none items-center"
             onClick={() => {
               setSelected(item.value)
               if (!bindTo) onChange(item.value, name)
               else bindTo((prevState) => ({ ...prevState, [name]: item.value }))
             }}>
-            <div
-              className={`relative h-6 w-6 items-center justify-center overflow-visible  rounded-full shadow-md shadow-gray-500 transition-colors ${
-                (selected === item.value && "bg-indigo-600") || "bg-white"
-              }`}>
-              <div
-                className={`absolute top-1/2 left-1/2 z-999 h-7 w-7 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-gray-300 p-4 shadow-md shadow-gray-500 transition-colors`}
-              />
-            </div>
-            <div className="ml-4">{item.name}</div>
-          </div>
+            <RadioBiggerPart selected={selected === item.value}>
+              <RadioBiggerInnerPart />
+            </RadioBiggerPart>
+            <div style={{marginLeft: "14px"}}>{item.name}</div>
+          </RadioOption>
         ))}
-    </div>
+    </RadioContainer>
   )
 }
 export default Radio

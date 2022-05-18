@@ -2,57 +2,11 @@ import Router from "next/router"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
 import { useEffect } from "react"
-import { createGlobalStyle } from "styled-components"
 import Layout from "../components/Layout"
 import { ModalProvider } from "../context/modal-context"
 import { ConfirmContextProvider } from "../modals/global/useConfirm"
 import "../styles/globals.css"
 
-
-const GlobalStyles = createGlobalStyle`
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-  .container {
-  width: 100%;
-  }
-  @media (min-width: 640px) {
-    .container {
-      max-width: 640px;
-    }
-  }
-  @media (min-width: 768px) {
-    .container {
-      max-width: 768px;
-    }
-  }
-  @media (min-width: 1024px) {
-    .container {
-      max-width: 1024px;
-    }
-  }
-  @media (min-width: 1280px) {
-    .container {
-      max-width: 1280px;
-    }
-  }
-  @media (min-width: 1536px) {
-    .container {
-      max-width: 1536px;
-    }
-  }
-  body, html {
-     font-family: Poppins, Helvetica, "sans-serif";
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    font-size: 14px;
-  }
-`
 
 Router.events.on("routeChangeStart", () => NProgress.start())
 Router.events.on("routeChangeComplete", () => NProgress.done())
@@ -71,7 +25,6 @@ export default function App({ Component, pageProps }) {
   }, [])
   return (
     <ModalProvider>
-      <GlobalStyles />
       <ConfirmContextProvider>
         <Layout>
           <Component {...pageProps} />
