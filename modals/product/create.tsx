@@ -46,13 +46,13 @@ const ProductCreate: React.FC = () => {
       <Head>
         <title>Ürün Oluştur</title>
       </Head>
-      <Card shadow={false}>
+      <Card>
         <form onSubmit={submitData}>
           <CardHeader hasAction>
             <CardTitle>Ürün Bilgileri</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col space-y-4">
-            <Grid col={1} row={1}>
+            <Grid column={1} row={1}>
               <Select
                 optionText={"name"}
                 optionValue={"id"}
@@ -67,7 +67,7 @@ const ProductCreate: React.FC = () => {
                 }
               />
             </Grid>
-            <Grid col={1} row={3} className={"mb-4 gap-2"}>
+            <Grid column={1} row={3} className={"mb-4 gap-2"}>
               <Input
                 label={"Ürün Adı"}
                 value={form.name}
@@ -100,7 +100,7 @@ const ProductCreate: React.FC = () => {
                 asyncLoadUrl={"/api/product_type"}
               />
             </Grid>
-            <Grid col={1} row={2} className={"gap-4"}>
+            <Grid column={1} row={2} className={"gap-4"}>
               <SelectInput
                 inputTitle={"Alış Fiyatı"}
                 selectTitle={"Kasa"}
@@ -128,7 +128,7 @@ const ProductCreate: React.FC = () => {
                 onTextChange={setForm}
               />
             </Grid>
-            <Grid col={1} row={1} className={"my-2"}>
+            <Grid column={1} row={1} className={"my-2"}>
               <CheckBox
                 value={form.critical_stock_alert}
                 onChange={(value) =>

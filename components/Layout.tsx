@@ -34,8 +34,8 @@ const Layout: React.FC<any> = (props) => {
           style={{
             margin: "0 auto",
             display: "flex",
-            overflowY: "scroll",
             padding: "32px",
+            height: "auto"
           }}>
           {props.children}
         </div>
