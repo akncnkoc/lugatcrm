@@ -13,11 +13,11 @@ type ButtonProps = {
 }
 const ButtonStyled = styled.button<ButtonProps>`
   position: relative;
-  border-radius: 6px;
+  border-radius: ${(props) => props.theme.general["1.5"]};
   background-color: ${(props) => props.theme.primary};
-  padding: 10px 16px;
+  padding: ${(props) => props.theme.general["2.5"]}; ${(props) => props.theme.general[4]};;
   text-align: center;
-  font-size: 14px;
+  font-size: ${(props) => props.theme.general[4]};;
   font-weight: 500;
   color: white;
   transition: 300ms all;
