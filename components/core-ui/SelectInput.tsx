@@ -48,7 +48,7 @@ const SelectInput: React.FC<{
     ...args
   } = props
   return (
-    <Grid column={2} row={1} style={{ height: "min-content" }}>
+    <Grid column={3} row={1} style={{ height: "min-content" }}>
       <StyledSelect
         options={(!asyncData && options) || null}
         async={asyncData && true}

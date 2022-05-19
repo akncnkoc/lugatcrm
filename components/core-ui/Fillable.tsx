@@ -6,8 +6,8 @@ type FillableProps = {
 }
 
 const Fillable = styled.div<FillableProps>`
-  grid-row: "span " + ${(props) => props.rowSpan};
-  grid-column: "span" + ${(props) => props.colSpan};
+  grid-row: span ${(props) => props.rowSpan};
+  grid-column: span ${(props) => props.colSpan};
 `
 
 export default Fillable

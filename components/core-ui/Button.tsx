@@ -9,6 +9,7 @@ type ButtonProps = {
   loading?: boolean
   children?: string | React.ReactNode | React.ReactNode[]
   onClick?: Function
+  disabled?: boolean
 }
 const ButtonStyled = styled.button<ButtonProps>`
   position: relative;
@@ -35,12 +36,13 @@ const ButtonStyled = styled.button<ButtonProps>`
 `
 
 export const Button: React.FC<ButtonProps> = (props) => {
-  const { loading, icon, hidden, children, onClick, ...args } = props
+  const { loading, icon, hidden, children, onClick, disabled, ...args } = props
   return (
     <ButtonStyled
       icon={icon}
       hidden={hidden}
       onClick={(e) => onClick && onClick(e)}
+      disabled={disabled}
       {...args}>
       {props.loading && (
         <div

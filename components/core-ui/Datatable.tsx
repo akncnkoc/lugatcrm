@@ -1,7 +1,7 @@
 import React, { Children, useEffect, useState } from "react"
-import { SelectOptions } from "./Select"
+import { Select, SelectOptions } from "./Select"
 import { Button } from "./Button"
-import { DatatablePageSizeSelector } from "./datatable/DatatablePageSizeSelector"
+import styled from "styled-components"
 
 export interface DatableOptions {
   pageSize?: number
@@ -31,6 +31,7 @@ export type DatatableState = {
   error: boolean
   pageSize: number
 }
+
 const INITIAL_PAGE_SIZE: number = 5
 const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 25, 50, 100, 250, 500, 1000]
 
@@ -277,41 +278,43 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
     }
   }
   return (
-    <div id="datatable" className={`flex h-full w-full flex-col p-4`}>
-      <div id="table-header" className="flex justify-between">
-        <DatatablePageSizeSelector
-          adapter={adapter}
-          setAdapter={setAdapter}
-          pageSizes={preparePageSizeOptions()}
-        />
-      </div>
-      <div className="flex flex-col">
-        <div className="-my-2 sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="transition-shadow  sm:rounded-tr-lg sm:rounded-tl-lg">
-              <table
-                className="min-w-full border-separate divide-y divide-gray-200 overflow-hidden rounded-md border-l border-gray-200 text-center"
-                style={{
-                  borderSpacing: "0",
-                }}>
+    <DatatableContainer>
+      <DatatableHeader>
+        <DatatablePageSizeSelectorContainer>
+          <span>Sayfada, </span>
+          <div style={{ width: "128px" }}>
+            <Select
+              title=""
+              name="pageSize"
+              options={preparePageSizeOptions()}
+              value={adapter.pageSize}
+              onChange={(value) => {
+                setAdapter((prevState) => ({ ...prevState, pageSize: value }))
+              }}
+            />
+          </div>
+          <span>kayıt gösteriliyor</span>
+        </DatatablePageSizeSelectorContainer>
+      </DatatableHeader>
+      <DatatableTableContainer>
+        <DatatableTableContainerDownOne>
+          <DatatableTableContainerDownTwo>
+            <DatatableTableContainerDownThree>
+              <DatatableTable>
                 <thead>{prepareColumns()}</thead>
-                <tbody className="bg-white ">
+                <tbody style={{ backgroundColor: "white" }}>
                   {adapter.loading && (
                     <tr>
-                      <td
-                        colSpan={columns.length}
-                        className={"border-l border-r border-gray-200 py-4"}>
+                      <DatatableLoadingAndNotFound colSpan={columns.length}>
                         Yükleniyor...
-                      </td>
+                      </DatatableLoadingAndNotFound>
                     </tr>
                   )}
                   {adapter.notfound && (
                     <tr>
-                      <td
-                        colSpan={columns.length}
-                        className={"border-r border-b border-gray-200 py-4"}>
+                      <DatatableLoadingAndNotFound colSpan={columns.length}>
                         Herhangi bir veri bulunamadı.
-                      </td>
+                      </DatatableLoadingAndNotFound>
                     </tr>
                   )}
                   {render &&
@@ -329,14 +332,13 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                     })}
                 </tbody>
                 <tfoot>{prepareColumns(false)}</tfoot>
-              </table>
-              <div className={"my-4 flex w-full justify-between"}>
+              </DatatableTable>
+              <DatatableResultAndPaginationContainer>
                 <div id={"show-results-count"}>
                   <span>{adapter.totalDataCount} kayıt bulundu</span>
                 </div>
-                <div className="flex gap-x-2">
+                <DatatablePaginationButtonContainer>
                   <Button
-                    className={"bg-indigo-500 text-white hover:bg-indigo-600"}
                     disabled={adapter.currentPage == 0}
                     onClick={() => {
                       if (!asyncData) updatePage(adapter.currentPage - 1)
@@ -359,7 +361,6 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                     </Button>
                   ))} */}
                   <Button
-                    className={"bg-indigo-500 text-white hover:bg-indigo-600"}
                     disabled={adapter.isLastPage}
                     onClick={() => {
                       if (!asyncData) updatePage(adapter.currentPage + 1)
@@ -367,16 +368,108 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                     }}>
                     Sonraki
                   </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                </DatatablePaginationButtonContainer>
+              </DatatableResultAndPaginationContainer>
+            </DatatableTableContainerDownThree>
+          </DatatableTableContainerDownTwo>
+        </DatatableTableContainerDownOne>
+      </DatatableTableContainer>
+    </DatatableContainer>
   )
 }
 
+const DatatableResultAndPaginationContainer = styled.div`
+  margin-bottom: 16px;
+  margin-top: 16px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`
+const DatatablePaginationButtonContainer = styled.div`
+  display: flex;
+  column-gap: 8px;
+`
+const DatatableContainer = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  padding: 16px;
+`
+const DatatableHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+const DatatableTableContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+const DatatableTableContainerDownOne = styled.div`
+  margin-top: -8px;
+  margin-bottom: -8px;
+  @media (min-width: 640px) {
+    margin-left: -24px;
+    margin-right: -24px;
+  }
+  @media (min-width: 1024px) {
+    margin-left: -32px;
+    margin-right: -32px;
+  }
+`
+const DatatableTableContainerDownTwo = styled.div`
+  display: inline-block;
+  min-width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  vertical-align: middle;
+
+  @media (min-width: 640px) {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  @media (min-width: 1024px) {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+`
+const DatatableTableContainerDownThree = styled.div`
+  @media (min-width: 640px) {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+  }
+`
+
+const DatatableTable = styled.table`
+  min-width: 100%;
+  border-collapse: separate;
+  > * + * {
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+    border-color: #eeeeee;
+  }
+  overflow: hidden;
+  border-radius: 6px;
+  border-left: 1px solid #eeeeee;
+  text-align: center;
+`
+const DatatableLoadingAndNotFound = styled.td`
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+  padding-bottom: 16px;
+  padding-top: 16px;
+`
+
+const DatatablePageSizeSelectorContainer = styled.div`
+  margin-bottom: 20px;
+  display: flex;
+  height: 32px;
+  align-items: center;
+  font-weight: 300;
+  font-size: 13px;
+  > * + * {
+    margin-left: 16px;
+  }
+`
 export const TableDataCell = (props) => {
   return (
     <td

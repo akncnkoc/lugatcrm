@@ -138,7 +138,6 @@ const SelectAsyncSelectedItem = styled.span`
   color: #616161;
 `
 
-
 const SelectTitleContainer = styled.div`
   display: flex;
   align-items: center;
@@ -235,14 +234,14 @@ export const Select: React.FC<SelectProps> = (props) => {
   //If options length gt 0 and value not provided update value to options first value
   // If value and options provided and not async, select must be select given value option value
   useEffect(() => {
-    if (options && options.length > 0 && !value) {
+    if (options && options.length > 0 && (!value || !async)) {
       setAdapter((prevState) => ({
         ...prevState,
-        value: options[0][optionText],
+        value: options[0][optionValue],
       }))
       onChange && onChange(options[0][optionValue])
     }
-    if (value && options && !async) {
+    if (value && options && options.length > 0 && !async) {
       const findValueIndex = options.findIndex((e) => {
         return e[optionValue] === value
       })
@@ -251,18 +250,18 @@ export const Select: React.FC<SelectProps> = (props) => {
         ...prevState,
         value: options[findValueIndex][optionText],
       }))
-      onChange(options[findValueIndex][optionValue])
+      onChange && onChange(options[findValueIndex][optionValue])
     }
-  }, [options])
+  }, [value])
 
   //TODO: when tpying in editable area must be updated items in value regex search
   const handleSearch = useCallback(() => {}, [])
-  
+
   const findTitleFromValue = (value: any) => {
     let index = -1
     if (value) {
       if (!async)
-        index = options.findIndex((item) => item[optionValue] === String(value))
+        index = options.findIndex((item) => item[optionValue] === value)
       else
         index = asyncOptions.findIndex(
           (item) => item[optionValue] === String(value)
@@ -282,7 +281,7 @@ export const Select: React.FC<SelectProps> = (props) => {
     }
     return false
   }
-  
+
   //If select focused open options menu
   const handleFocus = useCallback(() => {
     setAdapter((prevState) => ({ ...prevState, opened: true }))
@@ -304,6 +303,7 @@ export const Select: React.FC<SelectProps> = (props) => {
       opened: false,
     }))
   })
+  
 
   // If contentend editable area focused or clicked open options menu
   useEffect(() => {
@@ -315,7 +315,6 @@ export const Select: React.FC<SelectProps> = (props) => {
     }
     selectContainerRef.current.addEventListener("click", handleClick)
   }, [selectContainerRef.current])
-
 
   useEffect(() => {
     if (async) {
