@@ -13,8 +13,9 @@ const TabContainer = styled.div`
 `
 const TabListContainer = styled.ol`
   margin: 0 -24px;
+  display: flex;
   padding: 24px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #757575;
   column-gap: 24px;
 `
 
