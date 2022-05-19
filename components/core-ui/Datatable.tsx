@@ -178,34 +178,15 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
 
   const prepareColumns = (tbody = true) => {
     return (
-      <tr className={"overflow-hidden"}>
+      <tr style={{ overflow: "hidden" }}>
         {columns.map((title: string, index) => (
-          <th
-            className={` border-gray-200 px-6 py-3 text-[13px] font-medium leading-[20px] text-table-text-color
-              ${tbody && index === 0 && "border-tl border-t border-b border-r"}
-              ${
-                tbody &&
-                index === columns.length - 1 &&
-                "rounded-tr border-r border-b"
-              }
-              ${!tbody && index === 0 && "rounded-bl border-b border-r"}
-              ${!tbody && index === columns.length && "rounded-br border-r"}
-              ${
-                tbody &&
-                index !== columns.length &&
-                index !== 0 &&
-                "border-t border-r border-b border-gray-200"
-              }
-              ${
-                !tbody &&
-                index !== columns.length &&
-                index !== 0 &&
-                "border-r border-b border-gray-200"
-              }
-            `}
-            key={title}>
+          <DatatableColumnStyled
+            columns={columns}
+            tbody={tbody}
+            key={title}
+            index={index}>
             {title}
-          </th>
+          </DatatableColumnStyled>
         ))}
       </tr>
     )
@@ -442,15 +423,16 @@ const DatatableTableContainerDownThree = styled.div`
 const DatatableTable = styled.table`
   min-width: 100%;
   border-collapse: separate;
-  > * + * {
+  /* & > * + * {
     border-top-width: 0px;
     border-bottom-width: 1px;
     border-color: #eeeeee;
-  }
+  } */
   overflow: hidden;
   border-radius: 6px;
   border-left: 1px solid #eeeeee;
   text-align: center;
+  border-spacing: 0;
 `
 const DatatableLoadingAndNotFound = styled.td`
   border-left: 1px solid #eee;
@@ -470,14 +452,90 @@ const DatatablePageSizeSelectorContainer = styled.div`
     margin-left: 16px;
   }
 `
+const TableDataCellStyled = styled.td<{
+  center: boolean
+  childrencount: number
+}>`
+  font-size: 13px;
+  white-space: nowrap;
+  border-right: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+  padding: 13px;
+  line-height: 20px;
+  color: #3f4254;
+  display: ${(props) => (props.center ? "flex" : "")};
+  justify-content: ${(props) => (props.center ? "center" : "start")};
+  ${(props) => (props.childrencount >= 2 ? "> * + * {margin-left:8px}" : "")}
+`
+
+const DatatableColumnStyled = styled.th<{
+  tbody: boolean
+  index: number
+  columns: Array<any>
+}>`
+  border-color: #eeeeee;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #3f4254;
+  ${(props) =>
+    props.tbody &&
+    props.index === 0 &&
+    `
+      border-top: 1px solid #eeeeee;
+      border-bottom: 1px solid #eeeeee;
+      border-right: 1px solid #eeeeee;
+    `}
+  ${(props) =>
+    props.tbody &&
+    props.index === props.columns.length - 1 &&
+    `
+      border-top-right-radius: 4px;
+      border-right:1px solid #eeeeee;
+      border-bottom: 1px solid #eeeeee;
+    `}
+              ${(props) =>
+    !props.tbody &&
+    props.index === 0 &&
+    `
+      border-bottom-left-radius: 4px;
+      border-right: 1px solid #eeeeee;
+      border-bottom: 1px solid #eeeeee;
+    `}
+              ${(props) =>
+    !props.tbody &&
+    props.index === props.columns.length &&
+    `
+      border-bottom-right-radius: 4px;
+      border-right: 1px solid #eeeeee;
+    `}
+              ${(props) =>
+    props.tbody &&
+    props.index !== props.columns.length &&
+    props.index !== 0 &&
+    `
+      border-top: 1px solid #eeeeee;
+      border-right:1px solid #eeeeee;
+      border-bottom: 1px solid #eeeeee;
+    `}
+              ${(props) =>
+    !props.tbody &&
+    props.index !== props.columns.length &&
+    props.index !== 0 &&
+    `
+    border-right:1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    `}
+`
+
 export const TableDataCell = (props) => {
   return (
-    <td
-      className={`font-13px whitespace-nowrap border-r border-b border-gray-200 p-[13px] leading-[20px] text-[#3f4254] ${
-        props.center && "flex justify-center"
-      } ${Children.count(props.children) >= 2 && "space-x-2"}`}>
+    <TableDataCellStyled
+      center={props.center}
+      childrencount={Children.count(props.children)}>
       {props.children}
-    </td>
+    </TableDataCellStyled>
   )
 }
 

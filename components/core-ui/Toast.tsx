@@ -6,6 +6,10 @@ const Toast: React.FC = () => {
       className={
         "invisible fixed bottom-7.5  left-1/2 min-w-250px -translate-x-1/2 transform rounded-md bg-white p-4 shadow"
       }
+      style={{
+        visibility: "hidden",
+        position: "fixed"
+      }}
       id={"toast"}>
       toast
     </div>

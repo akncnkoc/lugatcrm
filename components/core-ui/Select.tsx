@@ -6,8 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { CheckIcon } from "@heroicons/react/solid"
-import { Transition } from "@headlessui/react"
+import { BiCheck } from "react-icons/bi"
 import { useOutsideAlerter } from "../../lib/outside-checker"
 import { BiDownArrowAlt } from "react-icons/bi"
 import { VscLoading } from "react-icons/vsc"
@@ -389,7 +388,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                       </SelectOptionItemText>
                       {item[optionValue] === adapter.value ? (
                         <SelectOptionItemCheckedIcon>
-                          <CheckIcon
+                          <BiCheck
                             aria-hidden="true"
                             style={{
                               width: "20px",
@@ -429,7 +428,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                       </SelectOptionItemText>
                       {item[optionValue] === adapter.value ? (
                         <SelectOptionItemCheckedIcon>
-                          <CheckIcon
+                          <BiCheck
                             aria-hidden="true"
                             style={{
                               width: "20px",
@@ -578,7 +577,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                           }))
                         }
                       }}>
-                      <>
+                      
                         <SelectOptionItemText
                           optionValue={item[optionValue]}
                           value={adapter.value}>
@@ -586,7 +585,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                         </SelectOptionItemText>
                         {checkFromValue(item[optionValue]) && (
                           <SelectOptionItemCheckedIcon>
-                            <CheckIcon
+                            <BiCheck
                               aria-hidden="true"
                               style={{
                                 width: "20px",
@@ -595,7 +594,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                             />
                           </SelectOptionItemCheckedIcon>
                         )}
-                      </>
+                      
                     </SelectOptionItem>
                   ))) ||
                   (async && (
