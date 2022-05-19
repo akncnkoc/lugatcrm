@@ -5,12 +5,12 @@ import Card, {
   CardActions,
   CardContent,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "../../components/core-ui/Card"
 import {
   Datatable,
   TableDataCell,
-  TableRow
+  TableRow,
 } from "../../components/core-ui/Datatable"
 import { Tooltip } from "../../components/core-ui/Tooltip"
 import { useModal } from "../../context/modal-context"
@@ -18,12 +18,12 @@ import { MomentFormatted, MomentLocalized } from "../../lib/momentLocalized"
 
 const Expense: React.FC<any> = (props) => {
   const { setModal } = useModal()
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([])
   useEffect(() => {
     fetch("/api/expense")
-      .then(res => res.json())
-      .then(res => setData(res))
-  }, []);
+      .then((res) => res.json())
+      .then((res) => setData(res))
+  }, [])
 
   return (
     <>

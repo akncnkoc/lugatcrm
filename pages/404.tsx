@@ -1,9 +1,22 @@
-export default function Custom404(props) {
+import styled from "styled-components"
+
+const ErrorPage = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+`
+const ErrorPageTitle = styled.h1`
+  color: #f44336;
+  font-size: 30px;
+`
+export default function Custom404() {
   return (
-    <div className="flex w-full items-center justify-center">
-      <h1 className="text-red-500 text-3xl">
+    <ErrorPage>
+      <ErrorPageTitle>
         🤷‍♂️Aradığınız sayfa hiç var olmadı ya da taşınmış olabilir.🤷‍♂️
-      </h1>
-    </div>
-  );
+      </ErrorPageTitle>
+    </ErrorPage>
+  )
 }

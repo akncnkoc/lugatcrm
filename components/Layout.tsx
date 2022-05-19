@@ -13,6 +13,40 @@ const LayoutStyled = styled.div`
   height: 100vh;
   width: 100%;
 `
+const AsideStyled = styled.div`
+  height: 100vh;
+  width: 256px;
+  min-width: 256px;
+  max-width: 256px;
+  background-color: rgb(30 30 45);
+`
+export const Header = styled.div`
+  display: flex;
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
+  width: 100%;
+  flex: 1;
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 #b0c5e7;
+`
+const AsideMenuItemStyled = styled.div<{ href: string; asPath: string }>`
+  display: flex;
+  height: 44px;
+  cursor: pointer;
+  align-items: center;
+  padding: 0px 24px;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 20px;
+  color: rgb(162 163 183);
+  transition: 500ms color, background-color;
+  background-color: ${(props) =>
+    props.href === props.asPath ? "rgb(27 27 40 / 1)" : ""};
+  &:hover {
+    background-color: rgb(27 27 40 / 1);
+  }
+`
 
 const Layout: React.FC<any> = (props) => {
   return (
@@ -35,7 +69,7 @@ const Layout: React.FC<any> = (props) => {
             margin: "0 auto",
             display: "flex",
             padding: "32px",
-            height: "auto"
+            height: "auto",
           }}>
           {props.children}
         </div>
@@ -43,13 +77,7 @@ const Layout: React.FC<any> = (props) => {
     </LayoutStyled>
   )
 }
-const AsideStyled = styled.div`
-  height: 100vh;
-  width: 256px;
-  min-width: 256px;
-  max-width: 256px;
-  background-color: rgb(30 30 45);
-`
+
 const Aside = () => {
   return (
     <AsideStyled>
@@ -60,23 +88,7 @@ const Aside = () => {
     </AsideStyled>
   )
 }
-const AsideMenuItemStyled = styled.div<{ href: string; asPath: string }>`
-  display: flex;
-  height: 44px;
-  cursor: pointer;
-  align-items: center;
-  padding: 0px 24px;
-  font-size: 13px;
-  font-weight: normal;
-  line-height: 20px;
-  color: rgb(162 163 183);
-  transition: 500ms color, background-color;
-  background-color: ${(props) =>
-    props.href === props.asPath ? "rgb(27 27 40 / 1)" : ""};
-  &:hover {
-    background-color: rgb(27 27 40 / 1);
-  }
-`
+
 const AsideMenu = () => {
   const router = useRouter()
 
@@ -96,16 +108,5 @@ const AsideMenu = () => {
     </div>
   )
 }
-
-export const Header = styled.div`
-  display: flex;
-  height: 64px;
-  min-height: 64px;
-  max-height: 64px;
-  width: 100%;
-  flex: 1;
-  background-color: white;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 #b0c5e7;
-`
 
 export default Layout

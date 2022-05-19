@@ -6,6 +6,7 @@ export type InputProps = {
   bindTo?: React.Dispatch<SetStateAction<any>>
   labelClassName?: string
   inputClassName?: string
+  type?: string
   hideLabel?: boolean
   value?: any
   onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined
@@ -43,11 +44,14 @@ const InputSelf = styled.input`
 export const Input: React.FC<InputProps> = (props) => {
   return (
     <InputContainer>
-      {!props.hideLabel && <InputLabel htmlFor={props.name}>{props.label}</InputLabel>}
+      {!props.hideLabel && (
+        <InputLabel htmlFor={props.name}>{props.label}</InputLabel>
+      )}
       <div style={{ position: "relative" }}>
         <InputSelf
           id={props.name}
           name={props.name}
+          type={props.type}
           onChange={(e) => {
             const { value } = e.target
             props.onChange && props.onChange(e)

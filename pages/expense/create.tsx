@@ -54,7 +54,7 @@ const ExpenseCreate: React.FC<any> = (props) => {
           </CardActions>
         </CardHeader>
         <CardContent>
-          <Grid col={2} row={2} className={"gap-2 gap-x-4"}>
+          <Grid column={2} row={2} className={"gap-2 gap-x-4"}>
             <Select
               options={props.expenseTypes}
               optionText={"name"}

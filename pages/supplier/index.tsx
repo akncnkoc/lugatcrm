@@ -1,17 +1,17 @@
 import Head from "next/head"
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { BiEdit, BiPlusCircle, BiTrash } from "react-icons/bi"
 import { Button } from "../../components/core-ui/Button"
 import Card, {
   CardActions,
   CardContent,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "../../components/core-ui/Card"
 import {
   Datatable,
   TableDataCell,
-  TableRow,
+  TableRow
 } from "../../components/core-ui/Datatable"
 import { useModal } from "../../context/modal-context"
 import { SupplierCreateModal } from "../../modals/supplier/create"
