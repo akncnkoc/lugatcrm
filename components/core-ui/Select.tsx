@@ -138,6 +138,73 @@ const SelectAsyncSelectedItem = styled.span`
   color: #616161;
 `
 
+
+const SelectTitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const SelectTitleContent = styled.div`
+  margin-bottom: 8px;
+  display: block;
+  font-size: 14px;
+  color: #616161;
+`
+
+const SelectHintContainer = styled.div`
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 9999px;
+  border: 1px solid #9e9e9e;
+`
+const SelectHintContent = styled.div<{ hintShow: boolean }>`
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  height: auto;
+  width: 224px;
+  border-radius: 8px;
+  background-color: #3949ab;
+  color: white;
+  transition: all;
+  visibility: ${(props) => (!props.hintShow ? "hidden" : "visible")};
+  transform: translate(
+    ${(props) => (props.hintShow ? "0%" : "0%")},
+    ${(props) => (props.hintShow ? "-50%" : "-8px")}
+  );
+`
+
+const SelectTitle: React.FC<{ title?: string; hint?: string }> = (props) => {
+  //? something wrong about usestate i cannot figure it out
+  //TODO: update this piece of shit
+  const { title, hint } = props
+  const [hintVisible, setHintVisible] = useState<boolean>()
+  return (
+    title && (
+      <SelectTitleContainer
+        onMouseDown={() => {
+          console.log("test")
+          setHintVisible(true)
+        }}>
+        <SelectTitleContent>{title}</SelectTitleContent>
+        {hint && (
+          <SelectHintContainer>
+            {hintVisible && (
+              <FadeIn>
+                <SelectHintContent hintShow={hintVisible}>
+                  {hint}
+                </SelectHintContent>
+              </FadeIn>
+            )}
+            <BsQuestion size="15" color="gray" />
+          </SelectHintContainer>
+        )}
+      </SelectTitleContainer>
+    )
+  )
+}
+
 export const Select: React.FC<SelectProps> = (props) => {
   const {
     value,
@@ -359,7 +426,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                       <SelectOptionItemText
                         optionValue={item[optionValue]}
                         value={adapter.value}>
-                        {item[optionValue]}
+                        {item[optionText]}
                       </SelectOptionItemText>
                       {item[optionValue] === adapter.value ? (
                         <SelectOptionItemCheckedIcon>
@@ -546,71 +613,4 @@ export const Select: React.FC<SelectProps> = (props) => {
   }
 
   return (!multiple && <SingleSelect />) || <MultipleSelect />
-}
-
-const SelectTitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-const SelectTitleContent = styled.div`
-  margin-bottom: 8px;
-  display: block;
-  font-size: 14px;
-  color: #616161;
-`
-
-const SelectHintContainer = styled.div`
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  border-radius: 9999px;
-  border: 1px solid #9e9e9e;
-`
-const SelectHintContent = styled.div<{ hintShow: boolean }>`
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  height: auto;
-  width: 224px;
-  border-radius: 8px;
-  background-color: #3949ab;
-  color: white;
-  transition: all;
-  visibility: ${(props) => (!props.hintShow ? "hidden" : "visible")};
-  transform: translate(
-    ${(props) => (props.hintShow ? "0%" : "0%")},
-    ${(props) => (props.hintShow ? "-50%" : "-8px")}
-  );
-`
-
-const SelectTitle: React.FC<{ title?: string; hint?: string }> = (props) => {
-  //? something wrong about usestate i cannot figure it out
-  //TODO: update this piece of shit
-  const { title, hint } = props
-  const [hintVisible, setHintVisible] = useState<boolean>()
-  return (
-    title && (
-      <SelectTitleContainer
-        onMouseDown={() => {
-          console.log("test")
-          setHintVisible(true)
-        }}>
-        <SelectTitleContent>{title}</SelectTitleContent>
-        {(hintVisible && "true") || "false"}
-        {hint && (
-          <SelectHintContainer>
-            {hintVisible && (
-              <FadeIn>
-                <SelectHintContent hintShow={hintVisible}>
-                  {hint}
-                </SelectHintContent>
-              </FadeIn>
-            )}
-            <BsQuestion size="15" color="gray" />
-          </SelectHintContainer>
-        )}
-      </SelectTitleContainer>
-    )
-  )
 }

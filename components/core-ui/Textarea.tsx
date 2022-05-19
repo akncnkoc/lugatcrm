@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { InputProps } from "./BindedInput"
+import { InputProps } from "./Input"
 
 const TextareaContainer = styled.div`
   margin: "16px 0";

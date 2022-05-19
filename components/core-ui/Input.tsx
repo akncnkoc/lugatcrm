@@ -1,55 +1,62 @@
-import React from "react"
-
-export type InputProps<T> = {
+import React, { SetStateAction } from "react"
+import styled from "styled-components"
+export type InputProps = {
   name?: string
   label?: string
-  value?: string
+  bindTo?: React.Dispatch<SetStateAction<any>>
   labelClassName?: string
   inputClassName?: string
   hideLabel?: boolean
-  onChange?: React.ChangeEventHandler<T> | undefined
+  value?: any
+  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined
   suffix?: JSX.Element | JSX.Element[] | React.ReactNode | undefined
 }
 
-export const Input: React.FC<
-  InputProps<HTMLInputElement> &
-    React.DetailedHTMLProps<
-      React.InputHTMLAttributes<HTMLInputElement>,
-      HTMLInputElement
-    >
-> = (props) => {
-  const {
-    name,
-    label,
-    value,
-    labelClassName,
-    inputClassName,
-    hideLabel = false,
-    onChange,
-    suffix,
-    ...args
-  } = props
+const InputContainer = styled.div`
+  display: block;
+`
+
+const InputLabel = styled.label`
+  margin-bottom: 8px;
+  display: block;
+  font-size: 14px;
+  color: rgb(55 65 81);
+`
+const InputSelf = styled.input`
+  margin-top: 4px;
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid rgb(229 231 235);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  padding: 8px 12px;
+  outline: none;
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(79 70 229 / 0.27);
+    border-color: rgba(79 70 229 / 0.27);
+  }
+`
+
+export const Input: React.FC<InputProps> = (props) => {
   return (
-    <div className="block">
-      {!hideLabel && (
-        <label
-          className={`mb-2 block text-sm  text-gray-700 ${labelClassName}`}
-          htmlFor={name}>
-          {label}
-        </label>
-      )}
-      <div className={"relative"}>
-        <input
-          type={"text"}
-          className={`mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-all ${inputClassName}`}
-          id={name}
-          step={"any"}
-          defaultValue={value}
-          onChange={(e) => onChange && onChange(e)}
-          {...args}
+    <InputContainer>
+      {!props.hideLabel && <InputLabel htmlFor={props.name}>{props.label}</InputLabel>}
+      <div style={{ position: "relative" }}>
+        <InputSelf
+          id={props.name}
+          name={props.name}
+          onChange={(e) => {
+            const { value } = e.target
+            props.onChange && props.onChange(e)
+            props.bindTo((prevState) => ({ ...prevState, [props.name]: value }))
+          }}
+          {...props}
         />
-        {suffix && suffix}
+        {props.suffix && props.suffix}
       </div>
-    </div>
+    </InputContainer>
   )
 }

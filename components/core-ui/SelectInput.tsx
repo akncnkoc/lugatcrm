@@ -1,9 +1,23 @@
 import React, { SetStateAction } from "react"
-import { Select, SelectOptions } from "./Select"
+import styled from "styled-components"
+import Fillable from "./Fillable"
 import { Input } from "./Input"
 import { Grid } from "./Miscellaneous"
-import Fillable from "./Fillable"
-
+import { Select, SelectOptions } from "./Select"
+const StyledSelect = styled(Select)`
+  height: 40px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+  box-shadow: none;
+`
+const StyledInput = styled(Input)`
+  width: 100%;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  height: 40px;
+  box-shadow: none;
+`
 const SelectInput: React.FC<{
   selectedValue?: string | number | any | undefined
   textValue?: string | number | any | undefined
@@ -34,9 +48,9 @@ const SelectInput: React.FC<{
     ...args
   } = props
   return (
-    <Grid col={3} row={1} className={"h-min"}>
-      <Select
-        options={!asyncData && options || null}
+    <Grid column={2} row={1} style={{ height: "min-content" }}>
+      <StyledSelect
+        options={(!asyncData && options) || null}
         async={asyncData && true}
         onChange={(value) =>
           onSelectChange((prevState) => ({ ...prevState, [selectName]: value }))
@@ -45,12 +59,9 @@ const SelectInput: React.FC<{
         title={selectTitle}
         optionText={selectOptionText}
         optionValue={selectOptionValue}
-        className={
-          "h-10 rounded-tr-none rounded-br-none border-r-0 shadow-none focus:border-gray-200 focus:ring-0"
-        }
       />
       <Fillable colSpan={2}>
-        <Input
+        <StyledInput
           value={textValue}
           onChange={(e) =>
             onTextChange((prevState) => ({
@@ -59,9 +70,6 @@ const SelectInput: React.FC<{
             }))
           }
           label={inputTitle}
-          inputClassName={
-            "w-full rounded-tl-none rounded-bl-none h-10 shadow-none"
-          }
         />
       </Fillable>
     </Grid>
