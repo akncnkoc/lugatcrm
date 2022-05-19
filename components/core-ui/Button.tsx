@@ -14,26 +14,33 @@ type ButtonProps = {
 const ButtonStyled = styled.button<ButtonProps>`
   position: relative;
   border-radius: 6px;
-  background-color: rgb(79 70 229 / 1);
+  background-color: ${(props) => props.theme.primary};
   padding: 10px 16px;
   text-align: center;
   font-size: 14px;
   font-weight: 500;
   color: white;
+  transition: 300ms all;
+
   &:hover {
-    background-color: rgb(55 48 163);
+    background-color: ${(props) => props.theme.hover.primary};
   }
+
   &:focus {
     outline: none;
   }
+
   &:disabled {
     pointer-events: none;
     opacity: 50%;
   }
+
   display: ${(props) => (props.icon ? "flex" : "block")};
   align-items: ${(props) => (props.icon ? "center" : "start")};
   visibility: ${(props) => props.hidden && "hidden"};
 `
+
+const DefaultButton = styled(ButtonStyled)``
 
 export const Button: React.FC<ButtonProps> = (props) => {
   const { loading, icon, hidden, children, onClick, disabled, ...args } = props
