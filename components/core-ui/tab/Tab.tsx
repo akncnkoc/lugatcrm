@@ -1,9 +1,29 @@
 import TabItem from "./TabItem"
 import { useEffect, useState } from "react"
+import styled from "styled-components"
 
 type TabProps = {
   children: any
 }
+
+const TabContainer = styled.div`
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+`
+const TabListContainer = styled.ol`
+  margin: 0 -24px;
+  padding: 24px;
+  border-bottom: 1px solid #eee;
+  column-gap: 24px;
+`
+
+const TabContentContanier = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px 0;
+`
 
 const Tab: React.FC<TabProps> = (props) => {
   const { children } = props
@@ -15,8 +35,8 @@ const Tab: React.FC<TabProps> = (props) => {
     setActiveTab(children[0].props.label)
   }, [children])
   return (
-    <div className="tabs flex h-full flex-col">
-      <ol className={"-mx-6 flex gap-x-6 border-b border-gray-300 px-6"}>
+    <TabContainer>
+      <TabListContainer>
         {children.map((child: any, index: number) => {
           const { label } = child.props
           return (
@@ -29,14 +49,14 @@ const Tab: React.FC<TabProps> = (props) => {
             />
           )
         })}
-      </ol>
-      <div className="flex flex-1 flex-col py-5">
+      </TabListContainer>
+      <TabContentContanier>
         {children.map((child: any) => {
           if (child.props.label !== activeTab) return undefined
           return child.props.children
         })}
-      </div>
-    </div>
+      </TabContentContanier>
+    </TabContainer>
   )
 }
-export default Tab;
+export default Tab
