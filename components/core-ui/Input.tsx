@@ -1,65 +1,74 @@
-import React, { SetStateAction } from "react"
+import React, { HTMLAttributes, SetStateAction } from "react"
 import styled from "styled-components"
+
 export type InputProps = {
   name?: string
   label?: string
   bindTo?: React.Dispatch<SetStateAction<any>>
-  labelClassName?: string
-  inputClassName?: string
   type?: string
   hideLabel?: boolean
   value?: any
   onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined
   suffix?: JSX.Element | JSX.Element[] | React.ReactNode | undefined
-}
+} & React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>
 
 const InputContainer = styled.div`
   display: block;
 `
 
 const InputLabel = styled.label`
-  margin-bottom: 8px;
-  display: block;
-  font-size: 14px;
-  color: rgb(55 65 81);
+  font-size: 1rem;
+  font-weight: 400;
+  color: #3f4254;
+  display: inline-block;
+  margin-bottom: 0.5rem;
 `
-const InputSelf = styled.input`
-  margin-top: 4px;
+const InputSelf = styled.input<any>`
   display: block;
   width: 100%;
-  border-radius: 6px;
-  border: 1px solid rgb(229 231 235);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-  padding: 8px 12px;
-  outline: none;
+  height: calc(1.5em + 1.3rem + 2px);
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #3f4254;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #e4e6ef;
+  box-shadow: none;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+  overflow: visible;
+  margin: 0;
+  border-radius: 0.42rem;
+
   &:focus {
-    box-shadow: 0 0 0 2px rgba(79 70 229 / 0.27);
-    border-color: rgba(79 70 229 / 0.27);
+    border-color: #69b3ff;
+    outline: 0;
+    box-shadow: none !important;
   }
 `
 
 export const Input: React.FC<InputProps> = (props) => {
+  const { name, label, type, hideLabel, onChange,suffix, bindTo, ...args } = props
   return (
     <InputContainer>
-      {!props.hideLabel && (
-        <InputLabel htmlFor={props.name}>{props.label}</InputLabel>
-      )}
+      {!hideLabel && <InputLabel htmlFor={name}>{label}</InputLabel>}
       <div style={{ position: "relative" }}>
         <InputSelf
-          id={props.name}
-          name={props.name}
-          type={props.type}
+          id={name}
+          name={name}
+          type={type}
           onChange={(e) => {
             const { value } = e.target
-            props.onChange && props.onChange(e)
-            props.bindTo((prevState) => ({ ...prevState, [props.name]: value }))
+            onChange && onChange(e)
+            bindTo && bindTo((prevState) => ({ ...prevState, [name]: value }))
           }}
-          {...props}
+          {...args}
         />
-        {props.suffix && props.suffix}
+        {suffix && suffix}
       </div>
     </InputContainer>
   )

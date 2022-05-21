@@ -7,6 +7,7 @@ import ConfirmDialog from "./core-ui/ConfirmDialog"
 import Toast from "./core-ui/Toast"
 import styled from "styled-components"
 import { asideMenuItems } from "../store/asideMenuItems"
+
 const LayoutStyled = styled.div`
   overflow-y: hidden;
   display: flex;
@@ -28,7 +29,6 @@ export const Header = styled.div`
   width: 100%;
   flex: 1;
   background-color: white;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 #b0c5e7;
 `
 const AsideMenuItemStyled = styled.div<{ href: string; asPath: string }>`
   display: flex;
@@ -43,6 +43,7 @@ const AsideMenuItemStyled = styled.div<{ href: string; asPath: string }>`
   transition: 500ms color, background-color;
   background-color: ${(props) =>
     props.href === props.asPath ? "rgb(27 27 40 / 1)" : ""};
+
   &:hover {
     background-color: rgb(27 27 40 / 1);
   }
@@ -60,16 +61,13 @@ const Layout: React.FC<any> = (props) => {
           height: "100vh",
           flex: 1,
           flexDirection: "column",
-          backgroundColor: "rgb(238 240 248)",
         }}>
         <Header />
         <div
-          className="container"
           style={{
-            margin: "0 auto",
-            display: "flex",
-            padding: "32px",
-            height: "auto",
+            flexDirection: "column",
+            flex: 1,
+              padding: "25px"
           }}>
           {props.children}
         </div>

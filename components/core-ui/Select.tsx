@@ -40,20 +40,30 @@ type SelectProps = {
 const SelectContainer = styled.div`
   width: 100%;
 `
-const SelectUserSelectArea = styled.div<{ opened: boolean }>`
+const SelectUserSelectArea = styled.div<{
+  opened: boolean
+  multiple?: boolean
+}>`
   position: relative;
   width: 100%;
   user-select: none;
   border-radius: 4px;
-  border: 1px solid #eeeeee;
-  padding: 8px 12px;
+  border: 1px solid #e4e6ef;
+  height: calc(1.5em + 1.3rem + 2px);
+  display: flex;
+  align-items: center;
   font-size: 14px;
   color: ${(props) => (props.opened ? "#3949ab" : "#616161")};
+
   //add focus thingi
   &:focus {
     outline: none;
     border-color: rgba(79 70 229 / 0.27);
   }
+`
+const SelectUserSelectDefaultText = styled.span`
+  display: inline-block;
+  padding: 0 16px;
 `
 const SelectUserAreaText = styled.span`
   position: absolute;
@@ -61,13 +71,15 @@ const SelectUserAreaText = styled.span`
   right: 8px;
   transform: translateY(-50%);
   font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `
 
-const SelectOptionsContainer = styled.div<{ opened: boolean }>`
+const SelectOptionsContainer = styled.div`
   position: absolute;
-  z-index: 50;
+  z-index: 9999;
   margin-top: 4px;
-  max-height: 60px;
   width: 100%;
   min-width: max-content;
   max-height: 240px;
@@ -75,26 +87,33 @@ const SelectOptionsContainer = styled.div<{ opened: boolean }>`
   border-radius: 8px;
   background-color: white;
   padding: 4px 0;
-  font-size: 16px;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.15), 0 1px 2px 0 rgb(0 0 0 / 0.15);
-  visibility: ${(props) => (props.hidden ? "hidden" : "visible")};
+  border: 1px solid #eee;
+
   &:focus {
     outline: none;
   }
 `
-const SelectOptionItem = styled.div<{ optionValue: string; value: string }>`
+const SelectOptionItem = styled.div<{
+  optionValue: string
+  value: string
+  multiple?: boolean
+  checkFromValue?: Function
+}>`
   position: relative;
   cursor: pointer;
   user-select: none;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 32px;
-  padding-right: 16px;
-  transition: 300ms background-color, color;
-  background-color: ${(props) =>
+  padding: 8px 16px 8px
+    ${(props) =>
+      (!props.multiple && props.optionValue == props.value) ||
+      (props.multiple && props.checkFromValue(props.optionValue))
+        ? "32px"
+        : "16px"};
+  //transition: 300ms background-color, color;
+  // background-color: ${(props) =>
     props.optionValue === props.value ? "#95a6f7" : "white"};
-  color: ${(props) =>
+  // color: ${(props) =>
     props.optionValue === props.value ? "#232fac" : "#212121"};
+
   &:hover {
     background-color: #95a6f7;
     color: #232fac;
@@ -124,16 +143,20 @@ const SelectOptionItemCheckedIcon = styled.span`
 `
 const SelectAsyncSelectedArea = styled.div<{ length: number }>`
   display: flex;
+  align-items: center;
+  height: 100%;
+
   > * + * {
     margin-left: 8px;
   }
-  padding: ${(props) => (props.length === 0 ? "10px 0px" : "0px")};
+
+  padding: ${(props) => (props.length === 0 ? "10px 0px" : "8px")};
 `
 
 const SelectAsyncSelectedItem = styled.span`
   border-radius: 4px;
   background-color: #e0e0e0;
-  padding: 6px 8px;
+  padding: 2px 6px;
   color: #616161;
 `
 
@@ -143,10 +166,11 @@ const SelectTitleContainer = styled.div`
 `
 
 const SelectTitleContent = styled.div`
-  margin-bottom: 8px;
-  display: block;
-  font-size: 14px;
-  color: #616161;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #3f4254;
+  display: inline-block;
+  margin-bottom: 0.5rem;
 `
 
 const SelectHintContainer = styled.div`
@@ -165,7 +189,7 @@ const SelectHintContent = styled.div<{ hintShow: boolean }>`
   border-radius: 8px;
   background-color: #3949ab;
   color: white;
-  transition: all;
+  //transition: all;
   visibility: ${(props) => (!props.hintShow ? "hidden" : "visible")};
   transform: translate(
     ${(props) => (props.hintShow ? "0%" : "0%")},
@@ -282,9 +306,10 @@ export const Select: React.FC<SelectProps> = (props) => {
   }
 
   //If select focused open options menu
-  const handleFocus = useCallback(() => {
-    setAdapter((prevState) => ({ ...prevState, opened: true }))
-  }, [])
+  const handleFocus = () => {
+    if (!adapter.opened)
+      setAdapter((prevState) => ({ ...prevState, opened: true }))
+  }
 
   //If select unfocused close options menu
   const handleBlur = useCallback((e: FocusEvent) => {
@@ -292,7 +317,7 @@ export const Select: React.FC<SelectProps> = (props) => {
       selectContainerRef.current &&
       !selectContainerRef.current.contains(e.target as any)
     )
-      setAdapter((prevState) => ({ ...prevState, opened: false }))
+      setAdapter((prevState) => ({ ...prevState, opened: !adapter.opened }))
   }, [])
 
   //Check if options menu opened and user click outside
@@ -302,14 +327,13 @@ export const Select: React.FC<SelectProps> = (props) => {
       opened: false,
     }))
   })
-  
 
   // If contentend editable area focused or clicked open options menu
   useEffect(() => {
     const handleClick = () => {
       setAdapter((prevState) => ({
         ...prevState,
-        opened: true,
+        opened: !adapter.opened,
       }))
     }
     selectContainerRef.current.addEventListener("click", handleClick)
@@ -343,9 +367,9 @@ export const Select: React.FC<SelectProps> = (props) => {
             className={`${className}`}
             onChange={handleSearch}
             onFocus={handleFocus}
-            onBlur={() => handleBlur}
             contentEditable
-            suppressContentEditableWarning>
+            suppressContentEditableWarning
+            multiple={false}>
             <SelectUserAreaText>
               {(adapter.loading && (
                 <VscLoading className={"animate-spin"} />
@@ -353,102 +377,60 @@ export const Select: React.FC<SelectProps> = (props) => {
                 //? look at transition for select element its buggy
                 <div
                   style={{
-                    transition: "1s all",
                     transform: (adapter.opened && "rotate(180deg)") || "none",
                   }}>
                   <BiDownArrowAlt />
                 </div>
               )}
             </SelectUserAreaText>
-            {findTitleFromValue(adapter.value) || "Seç"}
+            {(findTitleFromValue(adapter.value) && (
+              <SelectUserSelectDefaultText>
+                {findTitleFromValue(adapter.value)}
+              </SelectUserSelectDefaultText>
+            )) || (
+              <SelectUserSelectDefaultText>Seç</SelectUserSelectDefaultText>
+            )}
           </SelectUserSelectArea>
           {adapter.opened && (
-            <FadeIn>
-              <SelectOptionsContainer opened={adapter.opened}>
-                {(!async &&
-                  options &&
-                  options.length >= 1 &&
-                  options.map((item: SelectOptions, index) => (
-                    <SelectOptionItem
-                      optionValue={item[optionValue]}
-                      value={adapter.value}
-                      key={index}
-                      onMouseDown={() => {
-                        onChange(item[optionValue])
-                        // handleClose()
-                        setAdapter((prevState) => ({
-                          ...prevState,
-                          value: item[optionValue],
-                        }))
-                      }}>
-                      <SelectOptionItemText
-                        optionValue={item[optionValue]}
-                        value={adapter.value}>
-                        {item[optionValue]}
-                      </SelectOptionItemText>
-                      {item[optionValue] === adapter.value ? (
-                        <SelectOptionItemCheckedIcon>
-                          <BiCheck
-                            aria-hidden="true"
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                            }}
-                          />
-                        </SelectOptionItemCheckedIcon>
-                      ) : null}
-                    </SelectOptionItem>
-                  ))) ||
-                  (!async && (
-                    <div
-                      style={{
-                        padding: "12px",
-                      }}>
-                      Herhangi bir {title.toLowerCase()} bulunamadı
-                    </div>
-                  ))}
-                {(async &&
-                  !options &&
-                  asyncOptions.map((item: SelectOptions, index) => (
-                    <SelectOptionItem
-                      optionValue={item[optionValue]}
-                      value={adapter.value}
-                      key={index}
-                      onMouseDown={() => {
-                        onChange(item[optionValue])
-                        setAdapter((prevState) => ({
-                          ...prevState,
-                          value: item[optionValue],
-                        }))
-                      }}>
-                      <SelectOptionItemText
-                        optionValue={item[optionValue]}
-                        value={adapter.value}>
-                        {item[optionText]}
-                      </SelectOptionItemText>
-                      {item[optionValue] === adapter.value ? (
-                        <SelectOptionItemCheckedIcon>
-                          <BiCheck
-                            aria-hidden="true"
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                            }}
-                          />
-                        </SelectOptionItemCheckedIcon>
-                      ) : null}
-                    </SelectOptionItem>
-                  ))) ||
-                  (async && (
-                    <div
-                      style={{
-                        padding: "12px",
-                      }}>
-                      Herhangi bir {title.toLowerCase()} bulunamadı
-                    </div>
-                  ))}
-              </SelectOptionsContainer>
-            </FadeIn>
+            <SelectOptionsContainer>
+              {(!async &&
+                options &&
+                options.length >= 1 &&
+                showNotAsyncSingleSelectItems(
+                  options,
+                  optionValue,
+                  adapter,
+                  onChange,
+                  setAdapter,
+                  checkFromValue
+                )) ||
+                (!async && !options && (
+                  <div
+                    style={{
+                      padding: "12px",
+                    }}>
+                    Herhangi bir {title.toLowerCase()} bulunamadı
+                  </div>
+                ))}
+              {(async &&
+                !options &&
+                showAsyncSingleSelectItems(
+                  asyncOptions,
+                  optionValue,
+                  onChange,
+                  setAdapter,
+                  adapter,
+                  optionText
+                )) ||
+                (async && (
+                  <div
+                    style={{
+                      padding: "12px",
+                    }}>
+                    Herhangi bir {title.toLowerCase()} bulunamadı
+                  </div>
+                ))}
+            </SelectOptionsContainer>
           )}
         </div>
       </SelectContainer>
@@ -468,7 +450,8 @@ export const Select: React.FC<SelectProps> = (props) => {
             onFocus={handleFocus}
             onBlur={() => handleBlur}
             contentEditable
-            suppressContentEditableWarning>
+            suppressContentEditableWarning
+            multiple={true}>
             <SelectUserAreaText>
               {(adapter.loading && (
                 <VscLoading className={"animate-spin"} />
@@ -476,7 +459,6 @@ export const Select: React.FC<SelectProps> = (props) => {
                 //? look at transition for select element its buggy
                 <div
                   style={{
-                    transition: "1s all",
                     transform: (adapter.opened && "rotate(180deg)") || "none",
                   }}>
                   <BiDownArrowAlt />
@@ -493,117 +475,119 @@ export const Select: React.FC<SelectProps> = (props) => {
                   </SelectAsyncSelectedItem>
                 ))}
               </SelectAsyncSelectedArea>
-            )) ||
-              "Seç"}
+            )) || (
+              <SelectUserSelectDefaultText>Seç</SelectUserSelectDefaultText>
+            )}
           </SelectUserSelectArea>
           {adapter.opened && (
-            <FadeIn>
-              <SelectOptionsContainer opened={adapter.opened}>
-                {(!async &&
-                  options &&
-                  options.length >= 1 &&
-                  options.map((item: SelectOptions, index) => (
-                    <SelectOptionItem
-                      key={index}
-                      onClick={() => {
-                        if (!checkFromValue(item[optionValue])) {
-                          let appliedValue = [
-                            ...item[optionValue],
-                            ...(adapter.value as string[]),
-                          ]
-                          onChange(appliedValue)
-                          // handleClose()
-                          setAdapter((prevState) => ({
-                            ...prevState,
-                            value: appliedValue,
-                          }))
-                        }
-                      }}
+            <SelectOptionsContainer>
+              {(!async &&
+                options &&
+                options.length >= 1 &&
+                options.map((item: SelectOptions, index) => (
+                  <SelectOptionItem
+                    key={index}
+                    onClick={() => {
+                      if (!checkFromValue(item[optionValue])) {
+                        let appliedValue = [
+                          ...item[optionValue],
+                          ...(adapter.value as string[]),
+                        ]
+                        onChange(appliedValue)
+                        // handleClose()
+                        setAdapter((prevState) => ({
+                          ...prevState,
+                          value: appliedValue,
+                        }))
+                      }
+                    }}
+                    optionValue={item[optionValue]}
+                    value={adapter.value}
+                    multiple={true}
+                    checkFromValue={checkFromValue}>
+                    <SelectOptionItemText
                       optionValue={item[optionValue]}
                       value={adapter.value}>
-                      <SelectOptionItemText
-                        optionValue={item[optionValue]}
-                        value={adapter.value}>
-                        {item[optionText]}
-                      </SelectOptionItemText>
-                      {item[optionValue] === adapter.value ? (
-                        <SelectOptionItemCheckedIcon>
-                          <CheckIcon
-                            aria-hidden="true"
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                            }}
-                          />
-                        </SelectOptionItemCheckedIcon>
-                      ) : null}
-                    </SelectOptionItem>
-                  ))) ||
-                  (!async && (
-                    <div style={{ padding: "12px" }}>
-                      Herhangi bir {title.toLowerCase()} bulunamadı
-                    </div>
-                  ))}
-                {(async &&
-                  !options &&
-                  asyncOptions.map((item: SelectOptions, index) => (
-                    <SelectOptionItem
+                      {item[optionText]}
+                    </SelectOptionItemText>
+                    {item[optionValue] === adapter.value ? (
+                      <SelectOptionItemCheckedIcon>
+                        <BiCheck
+                          aria-hidden="true"
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                          }}
+                        />
+                      </SelectOptionItemCheckedIcon>
+                    ) : null}
+                  </SelectOptionItem>
+                ))) ||
+                (!async && (
+                  <div style={{ padding: "12px" }}>
+                    Herhangi bir {title.toLowerCase()} bulunamadı
+                  </div>
+                ))}
+
+              {(async &&
+                !options &&
+                asyncOptions.map((item: SelectOptions, index) => (
+                  <SelectOptionItem
+                    optionValue={item[optionValue]}
+                    value={adapter.value}
+                    key={index}
+                    onMouseDown={() => {
+                      if (!checkFromValue(item[optionValue])) {
+                        let appliedValue = [
+                          item[optionValue],
+                          ...(adapter.value as string[]),
+                        ]
+                        onChange(appliedValue)
+                        // handleClose()
+                        setAdapter((prevState) => ({
+                          ...prevState,
+                          value: appliedValue,
+                        }))
+                      } else {
+                        let adapterArr = adapter.value as string[]
+                        let filteredArr = adapterArr.filter(
+                          (filteredArrItem) =>
+                            filteredArrItem != item[optionValue]
+                        )
+                        onChange(filteredArr)
+                        // handleClose()
+                        setAdapter((prevState) => ({
+                          ...prevState,
+                          value: filteredArr,
+                        }))
+                      }
+                    }}
+                    multiple={true}
+                    checkFromValue={checkFromValue}>
+                    <SelectOptionItemText
                       optionValue={item[optionValue]}
-                      value={adapter.value}
-                      key={index}
-                      onMouseDown={() => {
-                        if (!checkFromValue(item[optionValue])) {
-                          let appliedValue = [
-                            item[optionValue],
-                            ...(adapter.value as string[]),
-                          ]
-                          onChange(appliedValue)
-                          // handleClose()
-                          setAdapter((prevState) => ({
-                            ...prevState,
-                            value: appliedValue,
-                          }))
-                        } else {
-                          let adapterArr = adapter.value as string[]
-                          let filteredArr = adapterArr.filter(
-                            (filteredArrItem) =>
-                              filteredArrItem != item[optionValue]
-                          )
-                          onChange(filteredArr)
-                          // handleClose()
-                          setAdapter((prevState) => ({
-                            ...prevState,
-                            value: filteredArr,
-                          }))
-                        }
-                      }}>
-                      
-                        <SelectOptionItemText
-                          optionValue={item[optionValue]}
-                          value={adapter.value}>
-                          {item[optionText]}
-                        </SelectOptionItemText>
-                        {checkFromValue(item[optionValue]) && (
-                          <SelectOptionItemCheckedIcon>
-                            <BiCheck
-                              aria-hidden="true"
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                              }}
-                            />
-                          </SelectOptionItemCheckedIcon>
-                        )}
-                      
-                    </SelectOptionItem>
-                  ))) ||
-                  (async && (
-                    <div style={{ padding: "12px" }}>
-                      Herhangi bir {title.toLowerCase()} bulunamadı
-                    </div>
-                  ))}
-              </SelectOptionsContainer>
-            </FadeIn>
+                      value={adapter.value}>
+                      {item[optionText]}
+                    </SelectOptionItemText>
+                    {checkFromValue(item[optionValue]) && (
+                      <SelectOptionItemCheckedIcon>
+                        <BiCheck
+                          aria-hidden="true"
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                          }}
+                        />
+                      </SelectOptionItemCheckedIcon>
+                    )}
+                  </SelectOptionItem>
+                ))) ||
+                (async && (
+                  <div style={{ padding: "12px" }}>
+                    Herhangi bir {title.toLowerCase()} bulunamadı
+                  </div>
+                ))}
+            </SelectOptionsContainer>
           )}
         </div>
       </SelectContainer>
@@ -611,4 +595,88 @@ export const Select: React.FC<SelectProps> = (props) => {
   }
 
   return (!multiple && <SingleSelect />) || <MultipleSelect />
+}
+
+const showNotAsyncSingleSelectItems = (
+  options,
+  optionValue,
+  adapter,
+  onChange,
+  setAdapter,
+  checkFromValue
+) => {
+  return options.map((item: SelectOptions, index) => (
+    <SelectOptionItem
+      optionValue={item[optionValue]}
+      value={adapter.value}
+      key={index}
+      onMouseDown={() => {
+        onChange(item[optionValue])
+        // handleClose()
+        setAdapter((prevState) => ({
+          ...prevState,
+          value: item[optionValue],
+        }))
+      }}
+      checkFromValue={checkFromValue}
+      multiple={false}>
+      <SelectOptionItemText
+        optionValue={item[optionValue]}
+        value={adapter.value}>
+        {item[optionValue]}
+      </SelectOptionItemText>
+      {item[optionValue] === adapter.value ? (
+        <SelectOptionItemCheckedIcon>
+          <BiCheck
+            aria-hidden="true"
+            style={{
+              width: "20px",
+              height: "20px",
+            }}
+          />
+        </SelectOptionItemCheckedIcon>
+      ) : null}
+    </SelectOptionItem>
+  ))
+}
+
+const showAsyncSingleSelectItems = (
+  asyncOptions,
+  optionValue,
+  onChange,
+  setAdapter,
+  adapter,
+  optionText
+) => {
+  return asyncOptions.map((item: SelectOptions, index) => (
+    <SelectOptionItem
+      optionValue={item[optionValue]}
+      value={adapter.value}
+      key={index}
+      onMouseDown={() => {
+        onChange(item[optionValue])
+        setAdapter((prevState) => ({
+          ...prevState,
+          value: item[optionValue],
+        }))
+      }}
+      multiple={false}>
+      <SelectOptionItemText
+        optionValue={item[optionValue]}
+        value={adapter.value}>
+        {item[optionText]}
+      </SelectOptionItemText>
+      {item[optionValue] === adapter.value ? (
+        <SelectOptionItemCheckedIcon>
+          <BiCheck
+            aria-hidden="true"
+            style={{
+              width: "20px",
+              height: "20px",
+            }}
+          />
+        </SelectOptionItemCheckedIcon>
+      ) : null}
+    </SelectOptionItem>
+  ))
 }

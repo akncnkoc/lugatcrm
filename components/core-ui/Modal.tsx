@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react"
 import { IoIosCloseCircle } from "react-icons/io"
 import styled from "styled-components"
+
 type ModalProps = {
   modal?: any
   children?: React.ReactNode
@@ -13,29 +14,31 @@ const ModalBackdrop = styled.div`
   top: 0;
   left: 0;
   z-index: 999;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   user-select: none;
   background-color: rgba(0, 0, 0, 0.1);
+  outline: none;
 `
 
 const ModalContainer = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  max-height: min-content;
-  min-width: 500px;
-  transform: translate(-50%, -50%);
+  transform: translate(0, -200px);
+  margin: 1.75rem auto;
+  width: auto;
+  max-width: 800px;
   border-radius: 6px;
-  background-color: white;
   padding: 16px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+  position: relative;
+  visibility: hidden;
+  opacity: 0;
+  transition: 500ms all;
 `
 const ModalCloseContainer = styled.div`
   position: absolute;
-  top: -56px;
-  right: -16px;
-  height: 132px;
+  top: 16px;
+  right: 16px;
+  height: 70px;
   cursor: pointer;
   font-size: 24px;
   color: rgb(107 114 128);
@@ -43,6 +46,13 @@ const ModalCloseContainer = styled.div`
 const Modal: React.FC<ModalProps> = (props) => {
   const { modal, unSetModal, staticBackdrop } = props
   const modalContainer = useRef<HTMLDivElement>(null)
+  const modalContentContainer = useRef<HTMLDivElement>(null)
+  const closeModal = () => {
+    modalContentContainer.current.style.transform = "translate(0,-200px)"
+    modalContentContainer.current.style.visibility = "hidden"
+    modalContentContainer.current.style.opacity = "0"
+    setTimeout(() => unSetModal(), 200)
+  }
   useEffect(() => {
     const bind = (e: KeyboardEvent) => {
       if (e.code != "Escape") return
@@ -55,22 +65,33 @@ const Modal: React.FC<ModalProps> = (props) => {
       unSetModal()
     }
     const outsideClick = (e: MouseEvent) => {
-      if (e.target === modalContainer.current && !staticBackdrop) unSetModal()
+      if (e.target === modalContainer.current && !staticBackdrop) closeModal()
     }
+
     document.addEventListener("keyup", bind)
+    if (modalContentContainer.current) {
+      modalContentContainer.current.style.transform = "translate(0,0)"
+      modalContentContainer.current.style.visibility = "visible"
+      modalContentContainer.current.style.opacity = "1"
+    }
     modalContainer.current.addEventListener("mousedown", outsideClick)
     return () => document.removeEventListener("keyup", bind)
   }, [modal, unSetModal, staticBackdrop])
 
   return (
     <ModalBackdrop ref={modalContainer}>
-      <ModalContainer className={`show`} id={"modal"}>
-        <div style={{ position: "relative" }}>
-          <ModalCloseContainer onClick={() => unSetModal()}>
-            <IoIosCloseCircle style={{ fontSize: "30px" }} />
-          </ModalCloseContainer>
+      <ModalContainer
+        className={`show`}
+        id={"modal"}
+        ref={modalContentContainer}>
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          <div style={{ position: "relative" }}>
+            <ModalCloseContainer onClick={() => closeModal()}>
+              <IoIosCloseCircle style={{ fontSize: "30px" }} />
+            </ModalCloseContainer>
+          </div>
+          {modal}
         </div>
-        <div style={{position: "relative", width: "100%", height: "100%"}}>{modal}</div>
       </ModalContainer>
     </ModalBackdrop>
   )

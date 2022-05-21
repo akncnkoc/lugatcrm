@@ -21,7 +21,6 @@ export default async function handle(
       } else {
         await getSuppiler(id, res)
       }
-
       break
   }
 }

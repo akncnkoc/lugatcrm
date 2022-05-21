@@ -6,6 +6,10 @@ export async function getExpenseData(id) {
     where: {
       id: id,
     },
+    include:{
+      safe: true,
+      expense_type: true
+    }
   })
 }
 
@@ -25,6 +29,7 @@ export async function updateExpenseData(id, data) {
 
 export async function createExpense(data) {
   data.price = parseFloat(data.price)
+  data.date = new Date(data.date);
   return await prisma.expense
     .create({
       data: data,

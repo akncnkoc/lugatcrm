@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="SwUserDefinedSpecifications">
-    <option name="specTypeByUrl">
-      <map />
+  <component name="StyledComponentsInjections">
+    <option name="prefixes">
+      <array>
+        <option value=".tsx" />
+      </array>
     </option>
   </component>
 </project>
