@@ -8,8 +8,8 @@ export type CurrencyInputProps = {
     value: string
   ) => void
   currencyValue: string
-  seperator: "." | ","
-} & InputProps<HTMLInputElement> &
+  seperator?: "." | ","
+} & InputProps &
   React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
@@ -38,8 +38,18 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = (props) => {
       onChange={(e) => handleChange(e)}
       {...args}
       suffix={
-        <div className={"absolute right-4 top-1/2 -translate-y-1/2 transform"}>
-          <span className={"text-sm font-light text-gray-400"}>
+        <div
+          style={{
+            position: "absolute",
+            right: "16px",
+            top: "50%",
+            transform: "translate(0, -50%)",
+          }}>
+          <span
+            style={{
+              fontSize: "13px",
+              color: "#ededed",
+            }}>
             {adapter.value}
           </span>
         </div>

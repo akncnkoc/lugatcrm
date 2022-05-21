@@ -1,6 +1,6 @@
 import React, { Children, useEffect, useState } from "react"
 import { Select, SelectOptions } from "./Select"
-import { Button } from "./Button"
+import { Button, PrimaryButton } from "./Button"
 import styled from "styled-components"
 
 export interface DatableOptions {
@@ -97,8 +97,6 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
     // }
     let pageNumbers = Array.from(Array(totalPages).keys()).map((item) => item)
     setPageItems(pageNumbers)
-
-    console.log("totalPage : " + totalPages)
   }
 
   const updatePage = (page: number) => {
@@ -319,14 +317,14 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                   <span>{adapter.totalDataCount} kayıt bulundu</span>
                 </div>
                 <DatatablePaginationButtonContainer>
-                  <Button
+                  <PrimaryButton
                     disabled={adapter.currentPage == 0}
                     onClick={() => {
                       if (!asyncData) updatePage(adapter.currentPage - 1)
                       else loadSlicedData(adapter.currentPage - 1)
                     }}>
                     Önceki
-                  </Button>
+                  </PrimaryButton>
                   {/* {pageItems.map((i) => (
                     <Button
                       key={i + 1}
@@ -341,14 +339,14 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                       {i + 1}
                     </Button>
                   ))} */}
-                  <Button
+                  <PrimaryButton
                     disabled={adapter.isLastPage}
                     onClick={() => {
                       if (!asyncData) updatePage(adapter.currentPage + 1)
                       else loadSlicedData(adapter.currentPage + 1)
                     }}>
                     Sonraki
-                  </Button>
+                  </PrimaryButton>
                 </DatatablePaginationButtonContainer>
               </DatatableResultAndPaginationContainer>
             </DatatableTableContainerDownThree>
@@ -448,6 +446,7 @@ const DatatablePageSizeSelectorContainer = styled.div`
   align-items: center;
   font-weight: 300;
   font-size: 13px;
+
   > * + * {
     margin-left: 16px;
   }
@@ -495,7 +494,7 @@ const DatatableColumnStyled = styled.th<{
       border-right:1px solid #eeeeee;
       border-bottom: 1px solid #eeeeee;
     `}
-              ${(props) =>
+  ${(props) =>
     !props.tbody &&
     props.index === 0 &&
     `
@@ -503,14 +502,14 @@ const DatatableColumnStyled = styled.th<{
       border-right: 1px solid #eeeeee;
       border-bottom: 1px solid #eeeeee;
     `}
-              ${(props) =>
+  ${(props) =>
     !props.tbody &&
     props.index === props.columns.length &&
     `
       border-bottom-right-radius: 4px;
       border-right: 1px solid #eeeeee;
     `}
-              ${(props) =>
+  ${(props) =>
     props.tbody &&
     props.index !== props.columns.length &&
     props.index !== 0 &&
@@ -519,7 +518,7 @@ const DatatableColumnStyled = styled.th<{
       border-right:1px solid #eeeeee;
       border-bottom: 1px solid #eeeeee;
     `}
-              ${(props) =>
+  ${(props) =>
     !props.tbody &&
     props.index !== props.columns.length &&
     props.index !== 0 &&
@@ -530,15 +529,15 @@ const DatatableColumnStyled = styled.th<{
 `
 
 export const TableDataCell = (props) => {
-  return (
-    <TableDataCellStyled
-      center={props.center}
-      childrencount={Children.count(props.children)}>
-      {props.children}
-    </TableDataCellStyled>
-  )
+    return (
+        <TableDataCellStyled
+            center={props.center}
+            childrencount={Children.count(props.children)}>
+            {props.children}
+        </TableDataCellStyled>
+    )
 }
 
 export const TableRow = (props) => {
-  return <tr>{props.children}</tr>
+    return <tr>{props.children}</tr>
 }

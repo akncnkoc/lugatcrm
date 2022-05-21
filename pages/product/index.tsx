@@ -2,7 +2,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import Head from "next/head"
 import React, { useEffect } from "react"
 import { BiEditAlt } from "react-icons/bi"
-import { Button, LinkButton } from "../../components/core-ui/Button"
+import {Button, LinkButton, PrimaryButton} from "../../components/core-ui/Button"
 import Card, {
   CardActions,
   CardContent,
@@ -41,9 +41,9 @@ const Product: React.FC<
         <CardHeader hasAction>
           <CardTitle>Ürünler</CardTitle>
           <CardActions>
-            <Button onClick={() => setModal(prepareCreateAction())}>
+            <PrimaryButton onClick={() => setModal(prepareCreateAction())}>
               Yeni Kayıt
-            </Button>
+            </PrimaryButton>
           </CardActions>
         </CardHeader>
         <CardContent>

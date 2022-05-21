@@ -1,7 +1,7 @@
 import Head from "next/head"
 import React, { useEffect } from "react"
 import { BiEdit, BiPlusCircle, BiTrash } from "react-icons/bi"
-import { Button } from "../../components/core-ui/Button"
+import {Button, IconButton, PrimaryButton} from "../../components/core-ui/Button"
 import Card, {
   CardActions,
   CardContent,
@@ -40,11 +40,11 @@ const Supplier: React.FC = (props) => {
         <CardHeader hasAction>
           <CardTitle>Tedarikçiler</CardTitle>
           <CardActions>
-            <Button
+            <PrimaryButton
               icon={<BiPlusCircle />}
               onClick={() => setModal(createActionModal())}>
               Yeni Kayıt
-            </Button>
+            </PrimaryButton>
           </CardActions>
         </CardHeader>
         <CardContent>
@@ -61,14 +61,14 @@ const Supplier: React.FC = (props) => {
                   <TableDataCell>{supplierItem.email}</TableDataCell>
                   <TableDataCell>{supplierItem.phone}</TableDataCell>
                   <TableDataCell center>
-                    <Button
+                    <PrimaryButton
                       icon={<BiEdit className="text-base" />}
                       onClick={() =>
                         setModal(editActionModal(supplierItem.id))
-                      }></Button>
-                    <Button
+                      }></PrimaryButton>
+                    <PrimaryButton
                       icon={<BiTrash className="text-base" />}
-                      onClick={() => createConfirmDialog()}></Button>
+                      onClick={() => createConfirmDialog()}></PrimaryButton>
                   </TableDataCell>
                 </TableRow>
               ))

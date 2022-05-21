@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { BiEditAlt } from "react-icons/bi"
-import { Button, LinkButton } from "../../components/core-ui/Button"
+import {
+  LinkButton,
+  SuccessButton,
+  SecondaryButton,
+  PrimaryButton,
+} from "../../components/core-ui/Button"
 import Card, {
   CardActions,
   CardContent,
@@ -15,6 +20,8 @@ import {
 import { Tooltip } from "../../components/core-ui/Tooltip"
 import { useModal } from "../../context/modal-context"
 import { MomentFormatted, MomentLocalized } from "../../lib/momentLocalized"
+import { ExpenseEditModal } from "../../modals/expense/edit"
+import {ExpenseCreateModal} from "../../modals/expense/create";
 
 const Expense: React.FC<any> = (props) => {
   const { setModal } = useModal()
@@ -31,8 +38,9 @@ const Expense: React.FC<any> = (props) => {
         <CardHeader hasAction>
           <CardTitle>Giderler</CardTitle>
           <CardActions>
-            <Button onClick={() => setModal(prepareDeleteAction)}>Test</Button>
-            <LinkButton to={"/expense/create"}>Yeni Kayıt</LinkButton>
+            <PrimaryButton onClick={() => setModal(prepareCreateAction)}>
+              Yeni Kayıt
+            </PrimaryButton>
           </CardActions>
         </CardHeader>
         <CardContent>
@@ -62,10 +70,11 @@ const Expense: React.FC<any> = (props) => {
                     {MomentLocalized(dataItem.updated_at)}
                   </TableDataCell>
                   <TableDataCell>
-                    <LinkButton to={"/expense/edit/" + dataItem.id}>
+                    <PrimaryButton
+                      onClick={() => setModal(prepareEditAction(dataItem.id))}>
                       <Tooltip>Düzenle</Tooltip>
                       <BiEditAlt size={"16"} />
-                    </LinkButton>
+                    </PrimaryButton>
                   </TableDataCell>
                 </TableRow>
               ))
@@ -75,6 +84,13 @@ const Expense: React.FC<any> = (props) => {
       </Card>
     </>
   )
+}
+
+const prepareEditAction = (id) => {
+  return <ExpenseEditModal id={id} />
+}
+const prepareCreateAction = (id) => {
+  return <ExpenseCreateModal />
 }
 
 const prepareDeleteAction = () => {

@@ -1,13 +1,14 @@
 import Router from "next/router"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
+import "../styles/globals.css"
 import { useEffect } from "react"
 import { ThemeProvider } from "styled-components"
 import Layout from "../components/Layout"
 import { ModalProvider } from "../context/modal-context"
 import { ConfirmContextProvider } from "../modals/global/useConfirm"
-import "../styles/globals.css"
-import { defaultTheme } from "../styles/theme-config"
+
+import { defaultTheme, GlobalStyle } from "../styles/theme-config"
 
 Router.events.on("routeChangeStart", () => NProgress.start())
 Router.events.on("routeChangeComplete", () => NProgress.done())
@@ -26,6 +27,7 @@ export default function App({ Component, pageProps }) {
   }, [])
   return (
     <ThemeProvider theme={defaultTheme}>
+      <GlobalStyle />
       <ModalProvider>
         <ConfirmContextProvider>
           <Layout>

@@ -2,21 +2,17 @@ import React from "react"
 import styled from "styled-components"
 
 const Card = styled.div`
-  height: 100%;
   width: 100%;
-  border-radius: ${(props) => props.theme.general[4]};
-  padding-left: ${(props) => props.theme.general[4]};
-  padding-right: ${(props) => props.theme.general[4]};
+  border-radius: 0.42rem;
   background-color: white;
-  box-shadow: ${(props) => props.theme.shadow.md};
+  box-shadow: 0 0 30px 0 rgb(82 63 105 / 5%);
 `
 export const CardHeader = styled.div<{ hasAction?: boolean }>`
   display: flex;
-  height: ${(props) => props.theme.general[16]};
   width: 100%;
   align-items: center;
-  padding: ${(props) => props.theme.general[10]}
-    ${(props) => props.theme.general[4]};
+  min-height: 70px;
+  padding: 0 1.30rem;
   justify-content: ${(props) => props.hasAction && "space-between"};
 `
 
@@ -24,11 +20,13 @@ export const CardContent = styled.div`
   height: max-content;
   width: 100%;
   border-top: 1px solid ${(props) => props.theme.border.gray["300"]};
-  padding-bottom: ${(props) => props.theme.general[4]};
-  padding-top: ${(props) => props.theme.general[4]};
+  padding: ${(props) => props.theme.general[4]};
 `
 export const CardTitle = styled.h1`
   font-weight: 500;
+  font-size: 1.275rem;
+  color: #181C32;
+  margin:0;
 `
 export const CardActions = styled.div`
   display: flex;

@@ -16,7 +16,7 @@ const TooltipContainer = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: rgb(79 70 229);
+  background: var(--primary);
   padding: 6px 12px;
   color: white;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.50), 0 1px 2px 0 rgb(0 0 0 / 0.50);
@@ -34,7 +34,7 @@ const TooltipArrow = styled.div`
   transform: translateX(-50%);
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
-  border-top: 6px solid rgb(79 70 229);
+  border-top: 6px solid var(--primary);
 `
 
 export const Tooltip: React.FC<TooltipProps> = (props) => {

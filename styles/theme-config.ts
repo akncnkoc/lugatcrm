@@ -1,7 +1,17 @@
+import { createGlobalStyle } from "styled-components"
+
 export type ThemeType = typeof defaultTheme
 
+export const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: #EEF0F8;
+    font-size: 13px;
+    color: #3F4254;
+  }
+`
+
 export const defaultTheme = {
-  primary: "#4C4C9D",
+  primary: "#1E1E2D",
   hover: {
     primary: "#42428A",
   },
