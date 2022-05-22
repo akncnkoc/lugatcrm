@@ -1,7 +1,9 @@
 import React, { Children, useEffect, useState } from "react"
 import { Select, SelectOptions } from "./Select"
-import { Button, PrimaryButton } from "./Button"
+import { IconButton, PrimaryButton, SuccessButton } from "./Button"
 import styled from "styled-components"
+import { BiRefresh } from "react-icons/bi"
+import { Tooltip } from "./Tooltip"
 
 export interface DatableOptions {
   pageSize?: number
@@ -17,6 +19,7 @@ interface DatatableProps {
   data?: DatatableDataShape[]
   render?: Function
   asyncData?: string
+  fetchTableData?: Function
 }
 
 export type DatatableState = {
@@ -42,14 +45,14 @@ const preparePageSizeOptions = () => {
 }
 
 export const Datatable: React.FC<DatatableProps> = (props) => {
-  const { columns, options, data, render, asyncData } = props
+  const { columns, options, data, render, asyncData, fetchTableData } = props
 
   const [pageItems, setPageItems] = useState<number[]>([])
 
   const [adapter, setAdapter] = useState({
     startPage: 1,
     endPage: 0,
-    currentPage: 1,
+    currentPage: 0,
     isFirstPage: true,
     isLastPage: false,
     totalDataCount: 0,
@@ -62,67 +65,14 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
   const [asyncItems, setAsyncItems] = useState<DatatableDataShape[]>([])
 
   const calculatePages = (itemLength: number = 0) => {
-    let totalPages = data
-      ? Math.floor(data.length / adapter.pageSize)
-      : Math.floor(itemLength / adapter.pageSize)
-
-    // if (totalPages <= adapter.pageSize) {
-    //   setAdapter((prevState) => ({
-    //     ...prevState,
-    //     startPage: 0,
-    //     endPage: totalPages,
-    //   }))
-    // } else {
-    //   let maxPagesBeforeCurrentPage = Math.floor(adapter.pageSize / 2)
-    //   let maxPagesAfterCurrentPage = Math.ceil(adapter.pageSize / 2) - 1
-    //   if (adapter.currentPage <= maxPagesBeforeCurrentPage) {
-    //     setAdapter((prevState) => ({
-    //       ...prevState,
-    //       startPage: 0,
-    //       endPage: adapter.pageSize,
-    //     }))
-    //   } else if (adapter.currentPage + maxPagesAfterCurrentPage >= totalPages) {
-    //     setAdapter((prevState) => ({
-    //       ...prevState,
-    //       startPage: totalPages - adapter.pageSize + 1,
-    //       endPage: totalPages,
-    //     }))
-    //   } else {
-    //     setAdapter((prevState) => ({
-    //       ...prevState,
-    //       startPage: adapter.currentPage - maxPagesBeforeCurrentPage,
-    //       endPage: adapter.currentPage + maxPagesAfterCurrentPage,
-    //     }))
-    //   }
-    // }
+    let totalPages = Math.ceil(itemLength / adapter.pageSize)
     let pageNumbers = Array.from(Array(totalPages).keys()).map((item) => item)
     setPageItems(pageNumbers)
   }
 
-  const updatePage = (page: number) => {
-    if (page <= 1) {
-      setAdapter((prevState) => ({
-        ...prevState,
-        currentPage: 1,
-        isFirstPage: true,
-        isLastPage: false,
-      }))
-    } else if (page >= Math.ceil(adapter.totalDataCount / adapter.pageSize)) {
-      setAdapter((prevState) => ({
-        ...prevState,
-        currentPage: Math.ceil(adapter.totalDataCount / adapter.pageSize),
-        isFirstPage: false,
-        isLastPage: true,
-      }))
-    } else {
-      setAdapter((prevState) => ({
-        ...prevState,
-        currentPage: page,
-        isFirstPage: false,
-        isLastPage: false,
-      }))
-    }
-  }
+  useEffect(() => {
+    loadSlicedData(0, adapter.pageSize)
+  }, [adapter.pageSize])
   //TODO: someting wrong about page size and recalcuting buttons
   useEffect(() => {
     setAdapter((prevState) => ({
@@ -138,37 +88,6 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
           : INITIAL_PAGE_SIZE,
     }))
   }, [])
-
-  useEffect(() => {
-    setInnerData([])
-
-    if (data && data.length >= 1 && !asyncData) {
-      let innerDataSliced = data.slice(
-        (adapter.currentPage - 1) * adapter.pageSize,
-        adapter.currentPage * adapter.pageSize
-      )
-      setInnerData(innerDataSliced)
-      setAdapter((prevState) => ({
-        ...prevState,
-        totalDataCount: data.length,
-        loading: false,
-        notfound: false,
-      }))
-    } else if (data && data.length === 0) {
-      setAdapter((prevState) => ({
-        ...prevState,
-        notfound: true,
-        loading: false,
-      }))
-    }
-    calculatePages()
-  }, [
-    data,
-    adapter.currentPage,
-    adapter.pageSize,
-    adapter.isLastPage,
-    adapter.isFirstPage,
-  ])
 
   useEffect(() => {
     loadData()
@@ -191,30 +110,27 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
   }
   const loadData = async (page = 0, size = 5) => {
     if (asyncData) {
+      setAsyncItems([])
       setAdapter((prevState) => ({ ...prevState, loading: true }))
       fetch(asyncData + "?all=true")
         .then((res) => res.json())
         .then((res) => {
-          if (res && res.length >= 1) {
-            let innerDataSliced = res.slice(
-              (adapter.currentPage - 1) * adapter.pageSize,
-              adapter.currentPage * adapter.pageSize
-            )
-            setAsyncItems(innerDataSliced)
+          if (res[0] && res[0].length >= 1) {
+            setAsyncItems(res[0])
             setAdapter((prevState) => ({
               ...prevState,
-              totalDataCount: res.length,
+              totalDataCount: res[1],
               loading: false,
               notfound: false,
             }))
-          } else if (res && res.length === 0) {
+          } else if (res[1] == 0) {
             setAdapter((prevState) => ({
               ...prevState,
               notfound: true,
               loading: false,
             }))
           }
-          calculatePages(res.length)
+          calculatePages(res[1])
         })
         .catch((err) => {
           setAdapter((prevState) => ({
@@ -225,26 +141,29 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
         })
     }
   }
-  const loadSlicedData = async (page = 0, size = 5) => {
+  const loadSlicedData = async (page, size) => {
     if (asyncData) {
       setAdapter((prevState) => ({ ...prevState, loading: true }))
       fetch(asyncData + "?page=" + page.toString() + "&size=" + size.toString())
         .then((res) => res.json())
         .then((res) => {
-          if (res && res.length >= 1) {
-            setAsyncItems(res)
+          if (res[0] && res[0].length >= 1) {
+            setAsyncItems(res[0])
             setAdapter((prevState) => ({
               ...prevState,
               loading: false,
               notfound: false,
               currentPage: page,
+              totalDataCount: res[1],
             }))
-          } else if (res && res.length === 0) {
+            calculatePages(res[1])
+          } else if (res[0] && res[0].length === 0) {
             setAdapter((prevState) => ({
               ...prevState,
               notfound: true,
               loading: false,
             }))
+            setAsyncItems([])
           }
         })
         .catch((err) => {
@@ -253,6 +172,7 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
             loading: false,
             notfound: true,
           }))
+          setAsyncItems([])
         })
     }
   }
@@ -267,13 +187,17 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
               name="pageSize"
               options={preparePageSizeOptions()}
               value={adapter.pageSize}
-              onChange={(value) => {
-                setAdapter((prevState) => ({ ...prevState, pageSize: value }))
-              }}
+              bindTo={setAdapter}
             />
           </div>
           <span>kayıt gösteriliyor</span>
         </DatatablePageSizeSelectorContainer>
+        <div style={{ justifySelf: "flex-end" }}>
+          <IconButton onClick={() => loadData()}>
+            <Tooltip>Yenile</Tooltip>
+            <BiRefresh />
+          </IconButton>
+        </div>
       </DatatableHeader>
       <DatatableTableContainer>
         <DatatableTableContainerDownOne>
@@ -289,7 +213,7 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                       </DatatableLoadingAndNotFound>
                     </tr>
                   )}
-                  {adapter.notfound && (
+                  {adapter.notfound && !adapter.loading && (
                     <tr>
                       <DatatableLoadingAndNotFound colSpan={columns.length}>
                         Herhangi bir veri bulunamadı.
@@ -301,6 +225,7 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                     !asyncData &&
                     render({
                       innerData,
+                      loadData,
                     })}
                   {render &&
                     !data &&
@@ -318,32 +243,49 @@ export const Datatable: React.FC<DatatableProps> = (props) => {
                 </div>
                 <DatatablePaginationButtonContainer>
                   <PrimaryButton
-                    disabled={adapter.currentPage == 0}
-                    onClick={() => {
-                      if (!asyncData) updatePage(adapter.currentPage - 1)
-                      else loadSlicedData(adapter.currentPage - 1)
+                    onClick={async () => {
+                      if (adapter.currentPage > 0)
+                        await loadSlicedData(
+                          adapter.currentPage - 1,
+                          adapter.pageSize
+                        )
                     }}>
                     Önceki
                   </PrimaryButton>
-                  {/* {pageItems.map((i) => (
-                    <Button
-                      key={i + 1}
-                      className={`text-sm ${
-                        (i + 1 === adapter.currentPage && "bg-indigo-600") ||
-                        "!bg-transparent text-[#7E8299]"
-                      }`}
-                      onClick={() => {
-                        if (!asyncData) updatePage(i)
-                        else loadSlicedData(i)
-                      }}>
-                      {i + 1}
-                    </Button>
-                  ))} */}
+                  {pageItems.map((i) => {
+                    if (i == adapter.currentPage) {
+                      return (
+                        <SuccessButton
+                          key={i + 1}
+                          onClick={async () => {
+                            await loadSlicedData(i, adapter.pageSize)
+                          }}>
+                          {i + 1}
+                        </SuccessButton>
+                      )
+                    } else {
+                      return (
+                        <PrimaryButton
+                          key={i + 1}
+                          onClick={async () => {
+                            await loadSlicedData(i, adapter.pageSize)
+                          }}>
+                          {i + 1}
+                        </PrimaryButton>
+                      )
+                    }
+                  })}
                   <PrimaryButton
                     disabled={adapter.isLastPage}
-                    onClick={() => {
-                      if (!asyncData) updatePage(adapter.currentPage + 1)
-                      else loadSlicedData(adapter.currentPage + 1)
+                    onClick={async () => {
+                      if (
+                        adapter.currentPage <
+                        Math.ceil(adapter.totalDataCount / adapter.pageSize) - 1
+                      )
+                        await loadSlicedData(
+                          adapter.currentPage + 1,
+                          adapter.pageSize
+                        )
                     }}>
                     Sonraki
                   </PrimaryButton>
@@ -378,6 +320,8 @@ const DatatableContainer = styled.div`
 const DatatableHeader = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 `
 const DatatableTableContainer = styled.div`
   display: flex;
@@ -440,12 +384,12 @@ const DatatableLoadingAndNotFound = styled.td`
 `
 
 const DatatablePageSizeSelectorContainer = styled.div`
-  margin-bottom: 20px;
   display: flex;
-  height: 32px;
+  height: 50px;
   align-items: center;
   font-weight: 300;
   font-size: 13px;
+  width: 100%;
 
   > * + * {
     margin-left: 16px;
@@ -529,15 +473,15 @@ const DatatableColumnStyled = styled.th<{
 `
 
 export const TableDataCell = (props) => {
-    return (
-        <TableDataCellStyled
-            center={props.center}
-            childrencount={Children.count(props.children)}>
-            {props.children}
-        </TableDataCellStyled>
-    )
+  return (
+    <TableDataCellStyled
+      center={props.center}
+      childrencount={Children.count(props.children)}>
+      {props.children}
+    </TableDataCellStyled>
+  )
 }
 
 export const TableRow = (props) => {
-    return <tr>{props.children}</tr>
+  return <tr>{props.children}</tr>
 }

@@ -1,7 +1,6 @@
-import prisma from "../../../lib/prisma"
 import { NextApiRequest, NextApiResponse } from "next"
 import {
-  createExpense,
+  createExpense, deleteExpenseData,
   getAllExpenses,
   getExpenseData,
   updateExpenseData,
@@ -12,7 +11,7 @@ export default async function handle(
   res: NextApiResponse
 ) {
   const {
-    query: { id },
+    query: { id, page, size },
   } = req as any
   switch (req.method) {
     case "POST":
@@ -25,10 +24,15 @@ export default async function handle(
       if (id) {
         res.status(200).json(await getExpenseData(id))
       } else {
-        res.status(200).json(await getAllExpenses())
+        if (!size && !page){
+          res.status(200).json(await getAllExpenses())
+        }else{
+          res.status(200).json(await getAllExpenses(size, page * size))
+        }
       }
       break
+    case "DELETE":
+      res.status(200).json(await deleteExpenseData(id))
+      break
   }
-
-  //TODO: change any to a proper state
 }

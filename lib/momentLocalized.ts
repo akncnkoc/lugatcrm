@@ -6,7 +6,12 @@ export const MomentLocalized = (date): string => {
 }
 export const MomentFormatted = (
   date: string | Date,
-  format = "DD.MM.YYYY HH:SS"
+  format = "DD.MM.YYYY HH:mm"
 ): string => {
-  return moment(date).format(format)
+  return moment(date).locale("tr").format(format)
+}
+export const MomentISO8061 = (
+  date: string | Date,
+): string => {
+  return moment(date).format()
 }

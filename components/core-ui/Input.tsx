@@ -51,6 +51,7 @@ const InputSelf = styled.input<any>`
   }
 `
 
+
 export const Input: React.FC<InputProps> = (props) => {
   const { name, label, type, hideLabel, onChange,suffix, bindTo, ...args } = props
   return (

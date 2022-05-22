@@ -4,12 +4,11 @@ import { useRouter } from "next/router"
 import React from "react"
 import Logo from "../assets/logo.png"
 import ConfirmDialog from "./core-ui/ConfirmDialog"
-import Toast from "./core-ui/Toast"
 import styled from "styled-components"
 import { asideMenuItems } from "../store/asideMenuItems"
 
 const LayoutStyled = styled.div`
-  overflow-y: hidden;
+  overflow: hidden;
   display: flex;
   height: 100vh;
   width: 100%;
@@ -67,7 +66,8 @@ const Layout: React.FC<any> = (props) => {
           style={{
             flexDirection: "column",
             flex: 1,
-              padding: "25px"
+            padding: "25px",
+            overflowY: "scroll",
           }}>
           {props.children}
         </div>

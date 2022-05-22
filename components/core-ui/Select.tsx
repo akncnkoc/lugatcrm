@@ -1,16 +1,9 @@
 import { BsQuestion } from "react-icons/bs"
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
-import { BiCheck } from "react-icons/bi"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+import { BiCheck, BiDownArrowAlt } from "react-icons/bi"
 import { useOutsideAlerter } from "../../lib/outside-checker"
-import { BiDownArrowAlt } from "react-icons/bi"
 import { VscLoading } from "react-icons/vsc"
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import FadeIn from "./FadeIn"
 
 export interface SelectOptions {
@@ -36,6 +29,7 @@ type SelectProps = {
   async?: boolean
   asyncLoadUrl?: string
   multiple?: boolean
+  bindTo?: React.Dispatch<React.SetStateAction<any>>
 }
 const SelectContainer = styled.div`
   width: 100%;
@@ -114,6 +108,7 @@ const SelectOptionItem = styled.div<{
   // color: ${(props) =>
     props.optionValue === props.value ? "#232fac" : "#212121"};
   transition: 500ms background-color;
+
   &:hover {
     background-color: #95a6f7;
     color: #232fac;
@@ -196,6 +191,18 @@ const SelectHintContent = styled.div<{ hintShow: boolean }>`
     ${(props) => (props.hintShow ? "-50%" : "-8px")}
   );
 `
+const SelectMenuDownContainer = styled.div<{
+  opened?: boolean
+}>`
+  transform: rotate(0deg);
+  transition: all 0.2s ease-out;
+
+  ${(props) =>
+    props.opened &&
+    css`
+      transform: rotate(180deg);
+    `};
+`
 
 const SelectTitle: React.FC<{ title?: string; hint?: string }> = (props) => {
   //? something wrong about usestate i cannot figure it out
@@ -234,6 +241,7 @@ export const Select: React.FC<SelectProps> = (props) => {
     onChange,
     options,
     multiple,
+    name,
     hint,
     optionText = "title",
     optionValue = "value",
@@ -241,6 +249,7 @@ export const Select: React.FC<SelectProps> = (props) => {
     containerClassName,
     async = false,
     asyncLoadUrl,
+    bindTo = null,
   } = props
   const selectContainerRef = useRef<HTMLDivElement>(null)
   const [adapter, setAdapter] = useState<{
@@ -252,7 +261,7 @@ export const Select: React.FC<SelectProps> = (props) => {
     opened: false,
     value: "",
     loading: false,
-    text: ""
+    text: "",
   })
 
   const [asyncOptions, setAsyncOptions] = useState([])
@@ -291,7 +300,6 @@ export const Select: React.FC<SelectProps> = (props) => {
     }
   }, [value])
 
-
   // If contentend editable area focused or clicked open options menu
   useEffect(() => {
     const handleClick = () => {
@@ -307,15 +315,17 @@ export const Select: React.FC<SelectProps> = (props) => {
     if (async) {
       setAdapter((prevState) => ({ ...prevState, loading: true }))
       fetch(asyncLoadUrl)
-          .then((res) => res.json())
-          .then((res) => {
+        .then((res) => res.json())
+        .then((res) => {
+          if (res) {
             let mappedOptions = res.map((item) => ({
               name: item[optionText],
               id: item[optionValue],
             }))
             setAsyncOptions(mappedOptions)
             setAdapter((prevState) => ({ ...prevState, loading: false }))
-          })
+          }
+        })
     }
   }, [])
 
@@ -370,8 +380,6 @@ export const Select: React.FC<SelectProps> = (props) => {
     }))
   })
 
-
-
   const SingleSelect = () => {
     return (
       <SelectContainer
@@ -392,15 +400,12 @@ export const Select: React.FC<SelectProps> = (props) => {
                 <VscLoading className={"animate-spin"} />
               )) || (
                 //? look at transition for select element its buggy
-                <div
-                  style={{
-                    transform: (adapter.opened && "rotate(180deg)") || "none",
-                  }}>
+                <SelectMenuDownContainer opened={adapter.opened}>
                   <BiDownArrowAlt />
-                </div>
+                </SelectMenuDownContainer>
               )}
             </SelectUserAreaText>
-            {(adapter.text.length > 0 && (
+            {(adapter.text && (
               <SelectUserSelectDefaultText>
                 {adapter.text}
               </SelectUserSelectDefaultText>
@@ -416,10 +421,13 @@ export const Select: React.FC<SelectProps> = (props) => {
                 showNotAsyncSingleSelectItems(
                   options,
                   optionValue,
+                  optionText,
                   adapter,
                   onChange,
                   setAdapter,
-                  checkFromValue
+                  checkFromValue,
+                  bindTo,
+                  name
                 )) ||
                 (!async && !options && (
                   <div
@@ -437,7 +445,9 @@ export const Select: React.FC<SelectProps> = (props) => {
                   onChange,
                   setAdapter,
                   adapter,
-                  optionText
+                  optionText,
+                  bindTo,
+                  name
                 )) ||
                 (async && (
                   <div
@@ -617,10 +627,13 @@ export const Select: React.FC<SelectProps> = (props) => {
 const showNotAsyncSingleSelectItems = (
   options,
   optionValue,
+  optionText,
   adapter,
   onChange,
   setAdapter,
-  checkFromValue
+  checkFromValue,
+  bindTo,
+  name
 ) => {
   return options.map((item: SelectOptions, index) => (
     <SelectOptionItem
@@ -628,12 +641,22 @@ const showNotAsyncSingleSelectItems = (
       value={adapter.value}
       key={index}
       onMouseDown={() => {
-        onChange(item[optionValue])
-        // handleClose()
-        setAdapter((prevState) => ({
-          ...prevState,
-          value: item[optionValue],
-        }))
+        if (bindTo == null) {
+          onChange(item[optionValue])
+          setAdapter((prevState) => ({
+            ...prevState,
+            value: item[optionValue],
+            text: item[optionText],
+          }))
+        } else {
+          console.log(item[optionValue])
+          setAdapter((prevState) => ({
+            ...prevState,
+            value: item[optionValue],
+            text: item[optionText],
+          }))
+          bindTo((prevState) => ({ ...prevState, [name]: item[optionValue] }))
+        }
       }}
       checkFromValue={checkFromValue}
       multiple={false}>
@@ -663,7 +686,9 @@ const showAsyncSingleSelectItems = (
   onChange,
   setAdapter,
   adapter,
-  optionText
+  optionText,
+  bindTo,
+  name
 ) => {
   return asyncOptions.map((item: SelectOptions, index) => (
     <SelectOptionItem
@@ -671,12 +696,22 @@ const showAsyncSingleSelectItems = (
       value={adapter.value}
       key={index}
       onMouseDown={() => {
-        onChange(item[optionValue])
-        setAdapter((prevState) => ({
-          ...prevState,
-          value: item[optionValue],
-          text: item[optionText],
-        }))
+        if (bindTo == null) {
+          onChange(item[optionValue])
+
+          setAdapter((prevState) => ({
+            ...prevState,
+            value: item[optionValue],
+            text: item[optionText],
+          }))
+        } else {
+          setAdapter((prevState) => ({
+            ...prevState,
+            value: item[optionValue],
+            text: item[optionText],
+          }))
+          bindTo((prevState) => ({ ...prevState, [name]: item[optionValue] }))
+        }
       }}
       multiple={false}>
       <SelectOptionItemText

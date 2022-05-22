@@ -1,8 +1,10 @@
 import React from "react"
 import { createPortal } from "react-dom"
-import { useConfirm } from "./../../modals/global/useConfirm"
+import { useConfirm } from "../../modals/global/useConfirm"
 import styled from "styled-components"
-import { Button } from "./Button"
+import { PrimaryButton } from "./Button"
+import FadeIn from "./FadeIn"
+
 const PortalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -30,6 +32,10 @@ const ConfirmDialogFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+
+  > * + * {
+    margin-left: 8px;
+  }
 `
 
 const ConfirmDialog = () => {
@@ -37,19 +43,17 @@ const ConfirmDialog = () => {
   const portalElement =
     typeof document !== "undefined" ? document.getElementById("__next") : null
   const component = confirmState.show ? (
-    <PortalOverlay>
-      <ConfirmDialogStyled>
-        <p>{confirmState?.text && confirmState.text}</p>
-        <ConfirmDialogFooter>
-          <Button onClick={onConfirm}>
-            Evet
-          </Button>
-          <Button onClick={onCancel}>
-            İptal Et
-          </Button>
-        </ConfirmDialogFooter>
-      </ConfirmDialogStyled>
-    </PortalOverlay>
+    <FadeIn>
+      <PortalOverlay>
+        <ConfirmDialogStyled>
+          <p>{confirmState?.text && confirmState.text}</p>
+          <ConfirmDialogFooter>
+            <PrimaryButton onClick={onConfirm}>Evet</PrimaryButton>
+            <PrimaryButton onClick={onCancel}>İptal Et</PrimaryButton>
+          </ConfirmDialogFooter>
+        </ConfirmDialogStyled>
+      </PortalOverlay>
+    </FadeIn>
   ) : null
 
   return component ? createPortal(component, portalElement) : null

@@ -8,18 +8,19 @@ type TooltipProps = {
 
 const TooltipContainer = styled.div`
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 6px);
   left: 50%;
   width: max-content;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  background: var(--primary);
+  border-radius: 4px;
+  font-weight: 400;
+  background: var(--light);
   padding: 6px 12px;
-  color: white;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.50), 0 1px 2px 0 rgb(0 0 0 / 0.50);
+  color: var(--dark);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.20);
   transition: 500ms color, box-shadow, background-color, opacity;
   z-index: 999;
 `
@@ -34,7 +35,7 @@ const TooltipArrow = styled.div`
   transform: translateX(-50%);
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
-  border-top: 6px solid var(--primary);
+  border-top: 6px solid var(--light);
 `
 
 export const Tooltip: React.FC<TooltipProps> = (props) => {

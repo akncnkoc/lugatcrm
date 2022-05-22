@@ -24,7 +24,7 @@ const ButtonStyled = styled.button<ButtonProps>`
   padding: 8.45px 13px;
   font-size: 1rem;
   line-height: 1.5;
-  border-radius: 5.46px;
+  border-radius: 0.42rem;
   box-shadow: none;
   transition: color 0.15s ease, background-color 0.15s ease,
     border-color 0.15s ease, box-shadow 0.15s ease,
@@ -66,7 +66,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
   )
 }
 
-export const PrimaryButton = styled(Button)`
+export const PrimaryButton = styled<any>(Button)`
   background-color: var(--primary);
   border: 1px solid var(--primary);
 
@@ -94,13 +94,20 @@ export const SuccessButton = styled(Button)`
     //border-color: #187de4;
   }
 `
-export const IconButton = styled(Button)`
+export const IconButton = styled<any>(Button)`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  height: calc(1.5em + 1.5rem + 2px);
-  width: calc(1.5em + 1.5rem + 2px);
+  height: calc(1.5em + 1.3rem + 2px);
+  width: calc(1.5em + 1.3rem + 2px);
+  background-color: transparent;
+  color: var(--success);
+  border: 1px solid var(--success);
+  &:hover{
+    background-color: var(--success);
+    color: var(--white);
+  }
 `
 
 export const LinkButton: React.FC<{ to: string } & ButtonProps> = (props) => {
