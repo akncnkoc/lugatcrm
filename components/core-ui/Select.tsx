@@ -113,7 +113,7 @@ const SelectOptionItem = styled.div<{
     props.optionValue === props.value ? "#95a6f7" : "white"};
   // color: ${(props) =>
     props.optionValue === props.value ? "#232fac" : "#212121"};
-
+  transition: 500ms background-color;
   &:hover {
     background-color: #95a6f7;
     color: #232fac;
@@ -247,20 +247,23 @@ export const Select: React.FC<SelectProps> = (props) => {
     opened: boolean
     value: string | string[] | any
     loading: boolean
+    text: string | any
   }>({
     opened: false,
     value: "",
     loading: false,
+    text: ""
   })
 
   const [asyncOptions, setAsyncOptions] = useState([])
   //If options length gt 0 and value not provided update value to options first value
   // If value and options provided and not async, select must be select given value option value
   useEffect(() => {
-    if (options && options.length > 0 && (!value || !async)) {
+    if (options && options.length > 0 && (value || !async)) {
       setAdapter((prevState) => ({
         ...prevState,
         value: options[0][optionValue],
+        text: options[0][optionText],
       }))
       onChange && onChange(options[0][optionValue])
     }
@@ -271,11 +274,50 @@ export const Select: React.FC<SelectProps> = (props) => {
       if (findValueIndex === -1) return
       setAdapter((prevState) => ({
         ...prevState,
-        value: options[findValueIndex][optionText],
+        value: options[findValueIndex][optionValue],
+        text: options[findValueIndex][optionText],
       }))
-      onChange && onChange(options[findValueIndex][optionValue])
+    }
+    if (value && asyncOptions && asyncOptions.length > 0) {
+      const findValueIndex = asyncOptions.findIndex((e) => {
+        return e[optionValue] == value
+      })
+      if (findValueIndex === -1) return
+      setAdapter((prevState) => ({
+        ...prevState,
+        value: asyncOptions[findValueIndex][optionValue],
+        text: asyncOptions[findValueIndex][optionText],
+      }))
     }
   }, [value])
+
+
+  // If contentend editable area focused or clicked open options menu
+  useEffect(() => {
+    const handleClick = () => {
+      setAdapter((prevState) => ({
+        ...prevState,
+        opened: !adapter.opened,
+      }))
+    }
+    selectContainerRef.current.addEventListener("click", handleClick)
+  }, [selectContainerRef.current])
+
+  useEffect(() => {
+    if (async) {
+      setAdapter((prevState) => ({ ...prevState, loading: true }))
+      fetch(asyncLoadUrl)
+          .then((res) => res.json())
+          .then((res) => {
+            let mappedOptions = res.map((item) => ({
+              name: item[optionText],
+              id: item[optionValue],
+            }))
+            setAsyncOptions(mappedOptions)
+            setAdapter((prevState) => ({ ...prevState, loading: false }))
+          })
+    }
+  }, [])
 
   //TODO: when tpying in editable area must be updated items in value regex search
   const handleSearch = useCallback(() => {}, [])
@@ -328,32 +370,7 @@ export const Select: React.FC<SelectProps> = (props) => {
     }))
   })
 
-  // If contentend editable area focused or clicked open options menu
-  useEffect(() => {
-    const handleClick = () => {
-      setAdapter((prevState) => ({
-        ...prevState,
-        opened: !adapter.opened,
-      }))
-    }
-    selectContainerRef.current.addEventListener("click", handleClick)
-  }, [selectContainerRef.current])
 
-  useEffect(() => {
-    if (async) {
-      setAdapter((prevState) => ({ ...prevState, loading: true }))
-      fetch(asyncLoadUrl)
-        .then((res) => res.json())
-        .then((res) => {
-          let mappedOptions = res.map((item) => ({
-            name: item[optionText],
-            id: item[optionValue],
-          }))
-          setAsyncOptions(mappedOptions)
-          setAdapter((prevState) => ({ ...prevState, loading: false }))
-        })
-    }
-  }, [])
 
   const SingleSelect = () => {
     return (
@@ -383,9 +400,9 @@ export const Select: React.FC<SelectProps> = (props) => {
                 </div>
               )}
             </SelectUserAreaText>
-            {(findTitleFromValue(adapter.value) && (
+            {(adapter.text.length > 0 && (
               <SelectUserSelectDefaultText>
-                {findTitleFromValue(adapter.value)}
+                {adapter.text}
               </SelectUserSelectDefaultText>
             )) || (
               <SelectUserSelectDefaultText>Seç</SelectUserSelectDefaultText>
@@ -658,6 +675,7 @@ const showAsyncSingleSelectItems = (
         setAdapter((prevState) => ({
           ...prevState,
           value: item[optionValue],
+          text: item[optionText],
         }))
       }}
       multiple={false}>

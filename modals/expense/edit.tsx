@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react"
 import { Input } from "../../components/core-ui/Input"
 import { Grid } from "../../components/core-ui/Miscellaneous"
-import {Button, PrimaryButton} from "../../components/core-ui/Button"
+import { Button, PrimaryButton } from "../../components/core-ui/Button"
 import { useModal } from "../../context/modal-context"
-import Card, {CardContent, CardHeader, CardTitle} from "../../components/core-ui/Card"
+import Card, {
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../components/core-ui/Card"
+import { Select } from "../../components/core-ui/Select"
+import { CurrencyInput } from "../../components/core-ui/CurrencyInput"
 
 export const ExpenseEditModal: React.FC<{
   id: string
@@ -11,21 +18,23 @@ export const ExpenseEditModal: React.FC<{
   const { unSetModal } = useModal()
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    expense_type_id: "",
+    safe_id: "",
+    date: "",
+    price: "0,00",
   })
   const submitData = async (e) => {
     e.preventDefault()
     setLoading(true)
     try {
       const body = { ...form }
-      await fetch("/api/expense/?id=" + id, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      })
-      unSetModal()
+      console.log(body);
+      // await fetch("/api/expense/?id=" + id, {
+      //   method: "PUT",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(body),
+      // })
+      // unSetModal()
     } catch (error) {
       console.error(error)
     }
@@ -35,46 +44,67 @@ export const ExpenseEditModal: React.FC<{
     fetch("/api/expense/?id=" + id)
       .then((res) => res.json())
       .then((res) => {
-        const { name, phone, email } = res
-        setForm({ name, phone, email })
+        const { expense_type_id, safe_id, date, price } = res
+        setForm({ expense_type_id, safe_id, date: new Date(date).toDateString(), price })
       })
   }, [])
   return (
     <Card>
-      <CardHeader><CardTitle>Gider Düzenle</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Gider Düzenle</CardTitle>
+      </CardHeader>
       <CardContent>
         <form onSubmit={submitData}>
-          <Grid row={3} column={1} rowGap={20}>
-            <Input
-              label={"Adı"}
-              name={"name"}
-              value={form.name}
-              onChange={(event) => {
-                const { value } = event.target
-                setForm((prevState) => ({ ...prevState, name: value }))
-              }}
-              autoFocus
+          <Grid row={2} column={2} rowGap={10} columnGap={10}>
+            <Select
+              title={"Gider Türü"}
+              name={"expense_type"}
+              value={form.expense_type_id}
+              async
+              asyncLoadUrl={"/api/expense_type"}
+              optionText={"name"}
+              optionValue={"id"}
+              onChange={(value) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  expense_type_id: value,
+                }))
+              }
             />
             <Input
-              label={"Email"}
-              name={"email"}
-              value={form.email}
-              onChange={(event) => {
-                const { value } = event.target
-                setForm((prevState) => ({ ...prevState, email: value }))
+              label={"Fiş Tarihi"}
+              name={"date"}
+              value={form.date}
+              type={"datetime-local"}
+              bindTo={setForm}
+            />
+            <Select
+              title={"Kasa"}
+              name={"safe"}
+              value={form.safe_id}
+              async
+              asyncLoadUrl={"/api/safe"}
+              optionText={"name"}
+              optionValue={"id"}
+              onChange={(value) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  safe_id: value,
+                }))
+              }
+            />
+            <CurrencyInput
+              label={"Fiyat"}
+              name={"price"}
+              currencyValue={form.price}
+              onInputChange={(event, value) => {
+                setForm((prevState) => ({ ...prevState, price: value }))
               }}
             />
-            <Input
-              label={"Telefon"}
-              name={"phone"}
-              value={form.phone}
-              onChange={(event) => {
-                const { value } = event.target
-                setForm((prevState) => ({ ...prevState, phone: value }))
-              }}
-            />
-            <PrimaryButton loading={loading}>Kaydet</PrimaryButton>
           </Grid>
+          <CardFooter>
+            <PrimaryButton>Kaydet</PrimaryButton>
+          </CardFooter>
         </form>
       </CardContent>
     </Card>
